@@ -7,9 +7,9 @@ In this project I investigated whether and how handwritten signs correlate with 
 ### Repository structure  
 - ***/corpus***:  the scans of the handwritten Abitur essays, divided by year.  
 - ***/scripts***: the analysis scripts (R)
+- ***Graphen_MAIN.xlsb***: the annotated corpus  
+- ***Graphen_MAIN.csv.zip***: the .csv-file of the annotated corpus (in a .zip-archive)
 - ***columnNames.md***: a file containing an explanation for all columns in the .xlsb corpus file.
-- ***Graphs_MAIN.xlsb***: the annotated corpus  
-- ***Graphs_MAIN.csv.zip***: the .csv-file of the annotated corpus (in a .zip-archive)
 - ***padj.R***: a script to perform the Bonferroni-Holm correction  
 
 
