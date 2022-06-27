@@ -9,7 +9,7 @@ In this project I investigated whether and how handwritten signs correlate with 
 - ***/scripts***: the analysis scripts (R)  
 - ***Graphs_MAIN.xlsb***: the annotated corpus  
 - ***Graphs_MAIN.csv.zip***: the .csv-file of the annotated corpus (in a .zip-archive)
-- ***pval.R***: a script to perform the Bonferroni-Holm correction  
+- ***padj.R***: a script to perform the Bonferroni-Holm correction  
 
 
 
