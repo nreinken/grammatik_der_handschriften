@@ -5,6 +5,7 @@
 - ***eFormFunction.R*** --- checks if the e shapes correlate with certain e functions  
 - ***graphematicFeet.R*** --- checks if graphematic feet are visible by looking at letter junctions as well as letter forms   
 - ***lettershapeDiphthongs.R*** --- checks if the letters have a different shape if they occur as second part of a diphthong  
+- ***leetershapeTension.R*** --- checks if stressed and unstressed vowels have different letter shapes
 - ***lettershapesPhon.R*** --- checks wether the letter shapes correlate with the phoneme class of the corresponding phoneme  
 - ***reducedEMorpho.R*** --- checks if the reduced e occurs more often in inflexion affixes   
 - ***rightLeftEdge.R*** --- checks if the right edge of a word has striking letter forms and checks if the first and last letter are more frequently joined to the next or previous letter   
