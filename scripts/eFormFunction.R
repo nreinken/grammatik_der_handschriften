@@ -1,6 +1,6 @@
-#doubleconsonants.R
+#eFormFunction.R
 #determine if there is a correlation between e basic shapes and e functions
-#© Niklas Reinken, July 2021
+#Â© Niklas Reinken, July 2021
 options(scipen = 999)
 
 library(janitor)
@@ -12,7 +12,7 @@ library(chisq.posthoc.test)
 checkLetter <- function(letter = "e", data = d, fisher = F, fontsize = 15) 
 {
   d_subs <- droplevels(filter(data, letter_rec == letter))
-  print("Häufigkeiten:")
+  print("HÃ¤ufigkeiten:")
   print(t <- table(d_subs$code_neu, d_subs$e_func))
   
   #calculate contingency tests
@@ -34,7 +34,7 @@ checkLetter <- function(letter = "e", data = d, fisher = F, fontsize = 15)
   }
   
   #effect size
-  print("Effektstärke")
+  print("EffektstÃ¤rke")
   print(assocstats(t))
   
   #post hocs
