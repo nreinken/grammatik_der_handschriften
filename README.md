@@ -8,6 +8,7 @@ In this project I investigated whether and how handwritten signs correlate with 
 - ***/corpus***:  the scans of the handwritten Abitur essays, divided by year.  
 - ***/scripts***: the analysis scripts (R)  
 - ***Graphs_MAIN.xlsb***: the annotated corpus  
+- ***Graphs_MAIN.csv***: the .csv-file of the annotated corpus
 - ***pval.R***: a script to perform the Bonferroni-Holm correction  
 
 
