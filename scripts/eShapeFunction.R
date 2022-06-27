@@ -1,4 +1,4 @@
-#eFormFunction.R
+#eShapeFunction.R
 #determine if there is a correlation between e basic shapes and e functions
 #© Niklas Reinken, July 2021
 options(scipen = 999)
