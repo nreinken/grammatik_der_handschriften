@@ -1,6 +1,6 @@
-#lettershapesPhon.R
+#lettershapePhon.R
 #determine if handwritten letterforms and phonological classes of the corresponding sound are dependent
-#© Niklas Reinken, July 2021
+#Â© Niklas Reinken, July 2021
 
 
 options(scipen = 999)
@@ -96,10 +96,10 @@ replace.y = c("STRICH VERT KURZ" = "kurzer Strich",
               "GERUNDET LINKS OBEN" = "links oben gerundet",
               "GERUNDET RECHTS OBEN" = "rechts oben gerundet",
               "PUNKT" = "Punkt",
-              "SCHRÄG RAUF" = "schräg rauf",
-              "SCHRÄG RUNTER" = "schräg runter")
+              "SCHRÃ„G RAUF" = "schrÃ¤g rauf",
+              "SCHRÃ„G RUNTER" = "schrÃ¤g runter")
 tt$y.level<- plyr::revalue(tt$y.level, replace.y)
-tt$y.level <- factor(tt$y.level, c("kurzer Strich", "langer Strich", "kurze Schlaufe", "lange Schlaufe", "schräg rauf", "schräg runter", "links oben gerundet", "rechts oben gerundet", "Punkt"))
+tt$y.level <- factor(tt$y.level, c("kurzer Strich", "langer Strich", "kurze Schlaufe", "lange Schlaufe", "schrÃ¤g rauf", "schrÃ¤g runter", "links oben gerundet", "rechts oben gerundet", "Punkt"))
 
 
 #plot
@@ -197,10 +197,10 @@ replace.y = c("BOGEN OBEN" = "Bogen nach oben",
               "GERUNDET RECHTS UNTEN" = "rechts unten gerundet",
               "GERUNDET LINKS OBEN" = "links oben gerundet",
               "STRICH HORI" = "horizontaler Strich",
-              "SCHRÄG RAUF" = "schräg rauf",
-              "SCHRÄG RUNTER" = "schräg runter")
+              "SCHRÃ„G RAUF" = "schrÃ¤g rauf",
+              "SCHRÃ„G RUNTER" = "schrÃ¤g runter")
 tt$y.level<- plyr::revalue(tt$y.level, replace.y)
-tt$y.level <- factor(tt$y.level, c("horizontaler Strich","schräg rauf", "schräg runter", "Bogen nach links", "Bogen nach rechts", "Bogen nach unten", "Bogen nach oben", "links oben gerundet", "rechts unten gerundet"))
+tt$y.level <- factor(tt$y.level, c("horizontaler Strich","schrÃ¤g rauf", "schrÃ¤g runter", "Bogen nach links", "Bogen nach rechts", "Bogen nach unten", "Bogen nach oben", "links oben gerundet", "rechts unten gerundet"))
 
 
 #plot
