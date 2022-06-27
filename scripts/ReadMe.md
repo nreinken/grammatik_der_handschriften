@@ -3,6 +3,7 @@
 - ***complexGraphemes.R*** --- tests if the letters in complex graphemes are more often joined and if they have different shapes   
 - ***distinctivity.R*** --- tests if similar letter shapes occur in the same positions within a syllable  
 - ***doubleConsonants.R*** --- tests if the parts of double consonants have the same shape or a different one  
+- ***donwsampling.R*** --- chooses a subset from all abitur essays of 2003-2013 from the GraphVar-corpus and tests them for representativity
 - ***eShapeFunction.R*** --- tests if the e shapes correlate with certain e functions  
 - ***graphematicFeet.R*** --- tests if graphematic feet are visible by looking at letter junctions as well as letter forms   
 - ***grapheticVariation.R*** --- calculates the overall syntagmatic and paradigmatic variation based on regression models
