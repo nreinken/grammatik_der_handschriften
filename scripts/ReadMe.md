@@ -6,7 +6,8 @@
 - ***graphematicFeet.R*** --- tests if graphematic feet are visible by looking at letter junctions as well as letter forms   
 - ***hShapeFunction.R*** --- tests if the shape and the function of a h do correlate
 - ***hShapeJunction.R*** --- tests if the shape of h and the existence of a junction with the next/previous letter are dependent
-- ***lettershapeDiphthongs.R*** --- tests if the letters have a different shape if they occur as second part of a diphthong  
+- ***lettershapeDiphthongs.R*** --- tests if the letters have a different shape if they occur as second part of a diphthong 
+- ***lettershapeKey.R*** --- tests for each letter if it has a different shape in the key syllable position   
 - ***lettershapeTension.R*** --- tests if stressed and unstressed vowels have different letter shapes   
 - ***lettershapesPhon.R*** --- tests wether the letter shapes correlate with the phoneme class of the corresponding phoneme  
 - ***reducedEMorpho.R*** --- tests if the reduced e occurs more often in inflexion affixes   
