@@ -11,7 +11,8 @@
 - ***lettershapeKey.R*** --- tests for each letter if it has a different shape in the key syllable position   
 - ***lettershapeMorpho.R*** --- tests if the letter shape is different if the letter shows morphological processes   
 - ***lettershapeTension.R*** --- tests if stressed and unstressed vowels have different letter shapes   
-- ***lettershapesPhon.R*** --- tests wether the letter shapes correlate with the phoneme class of the corresponding phoneme  
+- ***lettershapesPhon.R*** --- tests wether the letter shapes correlate with the phoneme class of the corresponding phoneme
+- ***morphemeBoundaries.R*** --- tests if letters at morpheme boundaries are typically joined or not
 - ***reducedEMorpho.R*** --- tests if the reduced e occurs more often in inflexion affixes   
 - ***lShapeSyllableBoundaries.R*** --- tests if the l shape is dependent on the syllable boundaries   
 - ***rightLeftEdge.R*** --- tests if the right edge of a word has striking letter forms and checks if the first and last letter are more frequently joined to the next or previous letter   
