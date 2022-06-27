@@ -1,6 +1,6 @@
 #doubleconsonants.R
 #determine if the parts of a double consonants have the same basic shape
-#© Niklas Reinken, July 2021
+#Â© Niklas Reinken, July 2021
 options(scipen = 999)
 
 library(janitor)
@@ -13,7 +13,7 @@ checkLetter <- function(letter = "a", data = d, fisher = T, fontsize = 15)
 {
   #print a table of frequencies
   d_subs <- droplevels(filter(data, doppelt == letter))
-  print("Häufigkeiten:")
+  print("HÃ¤ufigkeiten:")
   print(t <- table(d_subs$code_neu, d_subs$doppelt_index))
   
   #calculate a contingency test
@@ -34,7 +34,7 @@ checkLetter <- function(letter = "a", data = d, fisher = T, fontsize = 15)
     return()
   }
   #calculate effect sizes
-  print("Effektstärke")
+  print("EffektstÃ¤rke")
   print(assocstats(t))
   
   #run post-hoc tests
@@ -96,7 +96,7 @@ check_same_forms_pseudo <- function(doppelter = "ff", pseudo = "pseudo-ff")
   }
   #print results
   print(c(doppelter, " und ", pseudo))
-  print("Häufigkeiten:")
+  print("HÃ¤ufigkeiten:")
   
   #apply fisher to test for group differences
   print(t <- table(same_form$Fall, same_form$Gleich))
@@ -111,7 +111,7 @@ check_same_forms_pseudo <- function(doppelter = "ff", pseudo = "pseudo-ff")
   }
   
   #effect sizes
-  print("Effektstärke")
+  print("EffektstÃ¤rke")
   print(assocstats(t))
   
   #post hocs
