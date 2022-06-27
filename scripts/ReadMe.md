@@ -10,7 +10,8 @@
 - ***hShapeJunction.R*** --- tests if the shape of h and the existence of a junction with the next/previous letter are dependent
 - ***junctionsBigrams.R*** --- tests the junction frequency for each bigram with more than 100 occurences
 - ***junctionsLetters.R*** --- tests the junction frequency for each letter and each letter shape 
-- ***junctionsPersons.R*** --- tests the junction frequency for each individual text    
+- ***junctionsPersons.R*** --- tests the junction frequency for each individual text  
+- ***kappa.R*** --- calculate the intra rater reliability  
 - ***lettershapeDiphthongs.R*** --- tests if the letters have a different shape if they occur as second part of a diphthong 
 - ***lettershapeKey.R*** --- tests for each letter if it has a different shape in the key syllable position   
 - ***lettershapeMorpho.R*** --- tests if the letter shape is different if the letter shows morphological processes 
