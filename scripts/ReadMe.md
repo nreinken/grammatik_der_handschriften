@@ -1,5 +1,6 @@
 # Table of contents
 
+- ***complexGraphemes.R*** --- tests if the letters in complex graphemes are more often joined and if they have different shapes   
 - ***distinctivity.R*** --- tests if similar letter shapes occur in the same positions within a syllable  
 - ***doubleConsonants.R*** --- tests if the parts of double consonants have the same shape or a different one  
 - ***eShapeFunction.R*** --- tests if the e shapes correlate with certain e functions  
