@@ -25,4 +25,5 @@
 - ***reducedEMorpho.R*** --- tests if the reduced e occurs more often in inflexion affixes   
 - ***syllableBoundaries.R*** --- tests if letters at syllable boundaries are typically joined or not
 - ***rightLeftEdge.R*** --- tests if the right edge of a word has striking letter forms and checks if the first and last letter are more frequently joined to the next or previous letter   
-- ***shapesByPersonAndLetter.R*** --- calculates the amount of letter shapes each individual text contains for each letter      
+- ***shapesByPersonAndLetter.R*** --- calculates the amount of letter shapes each individual text contains for each letter    
+- ***textOperations.R*** --- read Abitur essays and convert them to a corpus based on letters as cases    
