@@ -8,7 +8,7 @@ word: Wort
 lemma: lemmatisiertes Wort bzw. Wortbestandteil  
 word_index: Position des Wortes im Text  
 letter_index: Position des Buchstabens im Wort  
-### letter: Buchstabe  ###
+**letter: Buchstabe**
 letter_rec: Buchstabe ohne Diakritika und mit Majuskel = 0  
 next_letter: nachfolgender Buchstabe  
 prev_letter: vorheriger Buchstabe  
@@ -102,7 +102,7 @@ close: Geschlossenheit
 head_free: Kopffreiheit  
 contacts: Berührungspunkte der Kodas mit dem Kopf  
 code: Kurzbezeichnung für die Buchstabenform (VERALTET)  
-code_neu: Kurzbezeichnung für die Buchstabenform nach einigen Anpassungen  
+**code_neu: Kurzbezeichnung für die Buchstabenform nach einigen Anpassungen**  
 
 #### Intra-Rater-Reliabilität
 drin: Kontrollspalte, ob der für die Intra-Rater-Reliabilität mitberechnet werden soll  
