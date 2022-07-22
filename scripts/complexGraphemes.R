@@ -1,6 +1,6 @@
 #complexGraphemes.R
 #checks if complex graphemes have a different letter shape
-#© Niklas Reinken, July 2021
+#Â© Niklas Reinken, July 2021
 options(scipen = 999)
 
 #load libraries
@@ -29,7 +29,7 @@ d$word_struc <- NULL
 d$WaZ <- NULL
 
 #rename some factor levels
-d$junc_border <- plyr::revalue(d$junc_border, c("TRUE" = "Unterbrechung", "FALSE" = "Verbindung"))
+d$junc_border <- plyr::revalue(d$junc_border, c("TRUE" = "separation", "FALSE" = "connection"))
 d <- droplevels(d)
 glimpse(d)
 summary(d)
@@ -47,73 +47,73 @@ summary(d2)
 table(d2$graph_complexity)
 
 ####contrast complex graphemes against single letter graphemes####
-d_binär <- d2
-newValues <- c("ch" = "komplex",
-               "rh" = "komplex",
-               "ck" = "komplex", 
-               "pf" = "komplex",
-               "ph" = "komplex",
-               "qu" = "komplex",
-               "st" = "komplex",
-               "th" = "komplex",
-               "el" = "nicht komplex",
-               "ng" = "nicht komplex",
-               "FALSE" = "nicht komplex")
-d_binär$graph_complexity <- plyr::revalue(d_binär$graph_complexity, newValues)
-d_binär <- droplevels(d_binär)
-summary(d_binär)
+d_binary <- d2
+newValues <- c("ch" = "complex",
+               "rh" = "complex",
+               "ck" = "complex", 
+               "pf" = "complex",
+               "ph" = "complex",
+               "qu" = "complex",
+               "st" = "complex",
+               "th" = "complex",
+               "el" = "not complex",
+               "ng" = "not complex",
+               "FALSE" = "not complex")
+d_binary$graph_complexity <- plyr::revalue(d_binary$graph_complexity, newValues)
+d_binary <- droplevels(d_binary)
+summary(d_binary)
 
 #contingency test
-(t_binär <- table(d_binär$junc_border,d_binär$graph_complexity))
-(test <- chisq.test(t_binär)) #significant
-assocstats(t_binär)
-chisq.posthoc.test(t_binär)
+(t_binary <- table(d_binary$junc_border,d_binary$graph_complexity))
+(test <- chisq.test(t_binary)) #significant
+assocstats(t_binary)
+chisq.posthoc.test(t_binary)
 
 #store p-value externally to apply bonferrroni-holm later
 p <- read.csv2("../pvalues.csv")
-p <- rbind(p, c("gesamt_komplexAufVerbindung", test$p.value))
+p <- rbind(p, c("full_komplecityXconnection", test$p.value))
 colnames(p) <- c("Test", "p")
 write_csv2(p, "../pvalues.csv")
 
 #save assocplots with and without legend
-png("assoc_Gesamt_komplexAufVerbunden_ohneSCH.png", height = 400, width = 300)
-assoc(t_binär, shade = T, legend_args = list("text" = "Pearson-\nResiduen"))
+png("assoc_full_complexXconnection_noSCH.png", height = 400, width = 300)
+assoc(t_binary, shade = T, legend_args = list("text" = "Pearson's\nresiduals"))
 dev.off()
-png("assocplot_Gesamt_komplexAufVerbunden_ohneSCH.png", height = 400, width = 300)
-assocplot(t_binär)
+png("assocplot_full_complexXConnection_noSCH.png", height = 400, width = 300)
+assocplot(t_binary)
 dev.off()
 
 ####compare complex graphemes individually####
 #rh is too rare, so it's omitted
-d_einzeln <- filter(d2, !graph_complexity == "rh")
-d_einzeln <- filter(d_einzeln, !graph_complexity == "FALSE")
-d_einzeln <- droplevels(d_einzeln)
-summary(d_einzeln)
-table(d_einzeln$graph_complexity)
+d_single <- filter(d2, !graph_complexity == "rh")
+d_single <- filter(d_single, !graph_complexity == "FALSE")
+d_single <- droplevels(d_single)
+summary(d_single)
+table(d_single$graph_complexity)
 
 #contingency test 
-(t_einzeln <- table(d_einzeln$junc_border, d_einzeln$graph_complexity))
-(test <- chisq.test(t_einzeln)) #significant
-assocstats(t_einzeln) #big effect
-chisq.posthoc.test(t_einzeln)
+(t_single <- table(d_single$junc_border, d_single$graph_complexity))
+(test <- chisq.test(t_single)) #significant
+assocstats(t_single) #big effect
+chisq.posthoc.test(t_single)
 
 #store p-value externally to apply bonferrroni-holm later
 p <- read.csv2("../pvalues.csv")
-p <- rbind(p, c("einzeln_komplexAufVerbindungen", test$p.value))
+p <- rbind(p, c("single_complexXconnection", test$p.value))
 colnames(p) <- c("Test", "p")
 write_csv2(p, "../pvalues.csv")
 
 #save plot
-png("assocplot_komplexAufVerbunden_ohneSCH.png", height = 400, width = 300)
-assocplot(t_einzeln)
+png("assocplot_complexXconnection_noSCH.png", height = 400, width = 300)
+assocplot(t_single)
 dev.off()
 
 
-####case study: compare ng and el as potentially complex graphemes####
+####case study: compare <ng> and <el> as potentially complex graphemes####
 
 #select ng cases
 d_ng <- filter(d, d$graph_complexity %in% c("ng", "FALSE"))
-d_ng$graph_complexity <- ifelse(d_ng$graph_complexity == "FALSE", "nicht <ng>", "<ng>")
+d_ng$graph_complexity <- ifelse(d_ng$graph_complexity == "FALSE", "not <ng>", "<ng>")
 (t_ng <- table(d_ng$graph_complexity, d_ng$junc_border))
 
 #chisq.test
@@ -123,13 +123,13 @@ chisq.posthoc.test(t_ng)
 
 #store p-value externally to apply bonferrroni-holm later
 p <- read.csv2("../pvalues.csv")
-p <- rbind(p, c("ng_Verbindungen", test$p.value))
+p <- rbind(p, c("ng_connections", test$p.value))
 colnames(p) <- c("Test", "p")
 write_csv2(p, "../pvalues.csv")
 
 #select el cases
 d_el <- filter(d, d$graph_complexity %in% c("el", "FALSE"))
-d_el$graph_complexity <- ifelse(d_el$graph_complexity == "FALSE", "nicht <el>", "<el>")
+d_el$graph_complexity <- ifelse(d_el$graph_complexity == "FALSE", "not <el>", "<el>")
 
 #contingency test
 (t_el <- table(d_el$graph_complexity, d_el$junc_border))
@@ -139,7 +139,7 @@ chisq.posthoc.test(t_el)
 
 #store p-value externally to apply bonferrroni-holm later
 p <- read.csv2("../pvalues.csv")
-p <- rbind(p, c("el_Verbindungen", test$p.value))
+p <- rbind(p, c("el_connections", test$p.value))
 colnames(p) <- c("Test", "p")
 write_csv2(p, "../pvalues.csv")
 
@@ -163,7 +163,7 @@ colnames(p) <- c("Test", "p")
 write_csv2(p, "../pvalues.csv")
 
 #save plot
-png("assocplot_th_komplexAufVerbunden.png", height = 400, width = 300)
+png("assocplot_th_complexXconnection.png", height = 400, width = 300)
 assocplot(t_th)
 dev.off()
 
@@ -172,7 +172,7 @@ dev.off()
 #select sch cases
 d_sch <- filter(d, d$graph_complexity %in% c("sch", "FALSE"))
 d_sch$code_neu <- NULL
-d_sch$graph_complexity <- plyr::revalue(d_sch$graph_complexity, c("FALSE" = "nicht komplex"))
+d_sch$graph_complexity <- plyr::revalue(d_sch$graph_complexity, c("FALSE" = "not complex"))
 d_sch <- droplevels(d_sch)
 summary(d_sch)
 
@@ -184,7 +184,7 @@ chisq.posthoc.test(t_sch)
 
 #store p-value externally to apply bonferrroni-holm later
 p <- read.csv2("../pvalues.csv")
-p <- rbind(p, c("sch_Verbindung", test$p.value))
+p <- rbind(p, c("sch_connection", test$p.value))
 colnames(p) <- c("Test", "p")
 write_csv2(p, "../pvalues.csv")
 
@@ -201,7 +201,7 @@ chisq.posthoc.test(t_sc)
 
 #store p-value externally to apply bonferrroni-holm later
 p <- read.csv2("../pvalues.csv")
-p <- rbind(p, c("sch_Verbindung_sc", test$p.value))
+p <- rbind(p, c("sch_connection_sc", test$p.value))
 colnames(p) <- c("Test", "p")
 write_csv2(p, "../pvalues.csv")
 
@@ -229,15 +229,15 @@ d <- filter(d, d$letter_rec %in% c("k", "h", "t", "n", "g", "e", "l"))
 d <- filter(d, !str_detect(code_neu, "99"))
 
 #backup dataset for later use in ng-el-comparison
-d_ngel <- d #erstmal für spätere Benutzung speichern
+d_ngel <- d #store for later use
 
 #contrast complex graphemes and single letter graphemes
-d$graph_complexity_2 <- plyr::revalue(d$graph_complexity_2, c("ch" = "komplex",
-                                                          "ck" = "komplex",
-                                                          "FALSE" = "nicht komplex",
-                                                          "th" = "komplex",
-                                                          "ng" = "nicht komplex",
-                                                          "el" = "nicht komplex"))
+d$graph_complexity_2 <- plyr::revalue(d$graph_complexity_2, c("ch" = "complex",
+                                                          "ck" = "complex",
+                                                          "FALSE" = "not complex",
+                                                          "th" = "complex",
+                                                          "ng" = "not complex",
+                                                          "el" = "not complex"))
 d <- droplevels(d)
 summary(d)
 
@@ -259,7 +259,7 @@ chisq.posthoc.test(t_h)
 
 #store p-value externally to apply bonferrroni-holm later
 p <- read.csv2("../pvalues.csv")
-p <- rbind(p, c("komplex_Form_h", test$p.value))
+p <- rbind(p, c("complex_form_h", test$p.value))
 colnames(p) <- c("Test", "p")
 write_csv2(p, "../pvalues.csv")
 
@@ -270,7 +270,7 @@ chisq.posthoc.test(t_k)
 
 #store p-value externally to apply bonferrroni-holm later
 p <- read.csv2("../pvalues.csv")
-p <- rbind(p, c("komplex_Form_k", test$p.value))
+p <- rbind(p, c("complex_form_k", test$p.value))
 colnames(p) <- c("Test", "p")
 write_csv2(p, "../pvalues.csv")
 
@@ -281,7 +281,7 @@ chisq.posthoc.test(t_t)
 
 #store p-value externally to apply bonferrroni-holm later
 p <- read.csv2("../pvalues.csv")
-p <- rbind(p, c("komplex_Form_t", test$p.value))
+p <- rbind(p, c("complex_form_t", test$p.value))
 colnames(p) <- c("Test", "p")
 write_csv2(p, "../pvalues.csv")
 
@@ -289,12 +289,12 @@ write_csv2(p, "../pvalues.csv")
 #####check letter forms for el and ng####
 
 #contrast complex graphemes with single letter graphemes
-d_ngel$graph_complexity_2 <- plyr::revalue(d_ngel$graph_complexity_2, c("ch" = "nicht komplex",
-                                                              "ck" = "nicht komplex",
-                                                              "FALSE" = "nicht komplex",
-                                                              "th" = "nicht komplex",
-                                                              "ng" = "komplex",
-                                                              "el" = "komplex"))
+d_ngel$graph_complexity_2 <- plyr::revalue(d_ngel$graph_complexity_2, c("ch" = "not complex",
+                                                              "ck" = "not complex",
+                                                              "FALSE" = "not complex",
+                                                              "th" = "not complex",
+                                                              "ng" = "complex",
+                                                              "el" = "complex"))
 d_ngel <- droplevels(d_ngel)
 summary(d_ngel)
 
@@ -317,7 +317,7 @@ chisq.posthoc.test(t_n)
 
 #store p-value externally to apply bonferrroni-holm later
 p <- read.csv2("../pvalues.csv")
-p <- rbind(p, c("komplex_Form_n", test$p.value))
+p <- rbind(p, c("complex_form_n", test$p.value))
 colnames(p) <- c("Test", "p")
 write_csv2(p, "../pvalues.csv")
 
@@ -328,7 +328,7 @@ chisq.posthoc.test(t_g)
 
 #store p-value externally to apply bonferrroni-holm later
 p <- read.csv2("../pvalues.csv")
-p <- rbind(p, c("komplex_Form_g", test$p.value))
+p <- rbind(p, c("complex_form_g", test$p.value))
 colnames(p) <- c("Test", "p")
 write_csv2(p, "../pvalues.csv")
 
@@ -339,7 +339,7 @@ chisq.posthoc.test(t_e)
 
 #store p-value externally to apply bonferrroni-holm later
 p <- read.csv2("../pvalues.csv")
-p <- rbind(p, c("komplex_Form_e", test$p.value))
+p <- rbind(p, c("complex_form_e", test$p.value))
 colnames(p) <- c("Test", "p")
 write_csv2(p, "../pvalues.csv")
 
@@ -350,7 +350,7 @@ chisq.posthoc.test(t_l)
 
 #store p-value externally to apply bonferrroni-holm later
 p <- read.csv2("../pvalues.csv")
-p <- rbind(p, c("komplex_Form_l", test$p.value))
+p <- rbind(p, c("complex_form_l", test$p.value))
 colnames(p) <- c("Test", "p")
 write_csv2(p, "../pvalues.csv")
 
