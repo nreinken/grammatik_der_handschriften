@@ -11,7 +11,7 @@ Due to copyright reasons, I can't publish scans of the handwritten texts. Contac
 - ***Graphen_MAIN.xlsb.zip***: the annotated corpus (in a .zip-archive) 
 - ***Graphen_MAIN.csv.zip***: the .csv-file of the annotated corpus (in a .zip-archive)
 - ***columnNames.md***: a file containing an explanation for all columns in the .xlsb corpus file.
-- ***padj.R***: a script to perform the Bonferroni-Holm correction  
+
 
 
 
