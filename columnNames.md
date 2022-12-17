@@ -104,13 +104,13 @@
 
 #### Graphotactics
 
--   `doppelt`: segment of a double consonant
+-   `double_cons`: segment of a double consonant
 
--   `doppelt_index`: first oder second part of a double consonant
+-   `double_index`: first oder second part of a double consonant
 
 -   `graph_complexity`: does the letter belong to a complex grapheme?
 
--   `graph_complexity_2`: see `graph_complexity`, but with both segments of the complex grapheme annotated
+-   `graph_complexity_both`: see `graph_complexity`, but with both segments of the complex grapheme annotated
 
 #### Syllabic graphematics
 
@@ -136,15 +136,15 @@
 
 -   `gfoot_index`: position of the graphematic foot within the word
 
--   `gfoot2`: same as `gfoot`, but without graphematic dactyli
+-   `gfoot_noDac`: same as `gfoot`, but without graphematic dactyli
 
--   `gfoot_can2`: same as `gfoot_can`, but without graphematic dactyli
+-   `gfoot_can_noDac`: same as `gfoot_can`, but without graphematic dactyli
 
--   `gfoot_border2`: same as `gfoot_border`, but without graphematic dactyli
+-   `gfoot_border_noDac`: same as `gfoot_border`, but without graphematic dactyli
 
--   `gfoot_count2`: same as `gfoot_count`, but without graphematic dactyli
+-   `gfoot_count_noDac`: same as `gfoot_count`, but without graphematic dactyli
 
--   `gfoot_index2`: same as `gfoot_index`, but without graphematic dactyli
+-   `gfoot_index_noDac`: same as `gfoot_index`, but without graphematic dactyli
 
 #### Graphematic functions
 
@@ -152,38 +152,34 @@
 
 -   `e_func`: writing of reduction vowel, full vowel, part of a diphthong, \<ie\>, etymologic, umlaut-e
 
--   `morph_belastet`: can the letter only be explained with morphological operations?
+-   `morphographic`: can the letter only be explained with morphological operations?
 
 #### Graphetics
 
--   `letter_form`: Kontrollspalte, ob letter form schon erfasst wurde
+-   `head_exist`: does the letter have a head?
 
--   `kopf_exist`: Hat die Form einen Kopf?
+-   `coda1_exist`: does the letter have first coda?
 
--   `koda1_exist`: Hat die Form eine Koda?
+-   `coda2_exist`: does the letter have a second coda?
 
--   `koda2_exist`: Hat die Form eine zweite Koda?
+-   `head_form`: shape of head
 
--   `kopf_form`: Form des Kopfs
+-   `coda1_form`: shape of coda 1
 
--   `koda1_form`: Form der ersten Koda
+-   `coda2_form`: shape of coda 2
 
--   `koda2_form`: Form der zweiten Koda
+-   `close`: closedness of the letter shape
 
--   `close`: Geschlossenheit
+-   `head_free`: is the head free?
 
--   `head_free`: Kopffreiheit
+-   `contacts`: number of contact points of each coda with the head
 
--   `contacts`: Berührungspunkte der Kodas mit dem Kopf
+-   **`code`: short name of letter form**
 
--   `code`: Kurzbezeichnung für die Buchstabenform (VERALTET)
+#### Intra-rater-reliability
 
--   **`code_neu`: Kurzbezeichnung für die Buchstabenform nach einigen Anpassungen**
+-   `irr_subset`: flag variable wether this case is used for irr
 
-#### Intra-Rater-Reliabilität
+-   `code_val`: letter form that has been annotated in irr
 
-drin: Kontrollspalte, ob der für die Intra-Rater-Reliabilität mitberechnet werden soll\
-Zufallszahl: Hilfsspalte für die Auswahl der Subsets zum Prüfen der Intra-Rater-Reliabilität\
-zufall_drin: Ist der Fall im Subset für die Intra-Rater-Reliabilität?\
-code_val: Buchstabenform, die bei der Validierung der Intra-Rater-Reliabilität annotiert wurde\
-ungleich: stimmt das Rating zu beiden Zeitpunkten überein?
+-   `diff`: is the rating the same as in the first rating?
