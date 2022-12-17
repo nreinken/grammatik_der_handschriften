@@ -7,8 +7,6 @@ if(!require(tidyverse)){install.packages("tidyverse")}
 if(!require(janitor)){install.packages("janitor")}
 library(tidyverse)
 
-
-#whichColumns = c("letter_rec", "junc_border", "graph_complexity")
 data.loadData <- function(whichColumns = "", removeWaZ = T, removeWordEnds = F)
 {
   d <- readr::read_csv2("Graphen_MAIN.csv")
@@ -42,6 +40,6 @@ data.loadData <- function(whichColumns = "", removeWaZ = T, removeWordEnds = F)
  
   d <- droplevels(d)
   
-  print(d)
+  print(d, n = 10)
   return(d)
 }
