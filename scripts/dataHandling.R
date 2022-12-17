@@ -14,6 +14,7 @@ data.loadData <- function(whichColumns = "", removeWaZ = T, removeWordEnds = F)
   
   #convert to factors and integers
   d <- d %>% mutate_if(is.character,as.factor)
+  d <- d %>% mutate_if(is.logical,as.factor)
   d <- d %>% mutate_if(is.double,as.integer)
   
   
