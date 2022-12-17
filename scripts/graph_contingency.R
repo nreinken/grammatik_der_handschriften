@@ -8,6 +8,7 @@ if(!require(plyr)){install.packages("plyr")}
 library(tidyverse)
 
 source("scripts/dataHandling.R")
+source("scripts/contingencyTests.R")
 
 
 ####Complex graphemes####
