@@ -6,4 +6,4 @@
 source("scripts/dataHandling.R")
 
 #load data
-data <- data.loadData()
+data <- data.loadData(whichColumns = c("letter_rec", "junc_border", "graph_complexity"))
