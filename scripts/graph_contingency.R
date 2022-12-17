@@ -45,3 +45,4 @@ data_complexGraphemes_binary <- droplevels(data_complexGraphemes_binary)
 
 #get frequency table
 table(data_complexGraphemes_binary)
+cont_test(data_complexGraphemes_binary)
