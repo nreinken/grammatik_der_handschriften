@@ -40,6 +40,6 @@ data.loadData <- function(whichColumns = "", removeWaZ = T, removeWordEnds = F)
  
   d <- droplevels(d)
   
-  print(d, n = 10)
+  print(glimpse(d, n = 10))
   return(d)
 }
