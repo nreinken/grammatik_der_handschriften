@@ -3,6 +3,9 @@
 #based on scripts by Niklas Reinken, July 2021
 #version 1, December 2022
 
+if(!require(vcd)){install.packages("vcd")}
+if(!require(chisq.posthoc.test)){install.packages("chisq.posthoc.test")}
+
 cont_test <- function(data)
 {
   t <- table(data)
@@ -30,5 +33,15 @@ cont_test <- function(data)
     print("### not significant ###")
     return()
   }
+ 
+  #TODO: Implement bonferoni-holm-test
+  
+  #run post hocs
+  print(vcd::assocstats(t))
+  print(chisq.posthoc.test::chisq.posthoc.test(t))
+  
+  #clean up and return
+  data <- NULL
+  t <- NULL
   return(test)
 }
