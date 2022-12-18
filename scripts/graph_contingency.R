@@ -10,6 +10,7 @@ library(tidyverse)
 source("scripts/dataHandling.R")
 source("scripts/contingencyTests.R")
 
+options(scipen = 999)
 
 ####Complex graphemes####
 
@@ -45,4 +46,4 @@ data_complexGraphemes_binary <- droplevels(data_complexGraphemes_binary)
 
 #get frequency table
 table(data_complexGraphemes_binary)
-test <- cont_test(data_complexGraphemes_binary)
+test <- cont_test(data = data_complexGraphemes_binary, title = "complex vs not complex")
