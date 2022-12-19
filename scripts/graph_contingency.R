@@ -47,5 +47,21 @@ data_complexGraphemes_binary <- droplevels(data_complexGraphemes_binary)
 #get frequency table
 table(data_complexGraphemes_binary)
 
-#run contingency tests
+#run contingency test
 cont_test(data = data_complexGraphemes_binary, x.title = "Komplexität", y.title = "Verbindung")
+
+#compare complex graphemes individually
+#<rh> is too rare, so it's omitted
+data_complexGraphemes_single <- filter(data_complexGraphemes, !graph_complexity == "rh")
+
+#we will also remove <el> and <ng> for now
+data_complexGraphemes_single <- filter(data_complexGraphemes_single, !graph_complexity == "ng")
+data_complexGraphemes_single <- filter(data_complexGraphemes_single, !graph_complexity == "el")
+
+#remove all non-complex graphemes
+data_complexGraphemes_single <- filter(data_complexGraphemes_single, !graph_complexity == "FALSE")
+data_complexGraphemes_single <- droplevels(data_complexGraphemes_single)
+
+#get frequency table
+table(data_complexGraphemes_single)
+cont_test(data = data_complexGraphemes_single, x.title = "Komplexität_nurKomplexe", y.title = "Verbindung")
