@@ -25,7 +25,9 @@ pval <- function (pvalue, title)
   
   #apply bonferoni-holm correction
   pvals$padj <- round(p.adjust(pvals$pvalue, method = "holm"),5)
-  #pvals <- mutate(pvals, sig = ifelse(pvals.padj < 0.05, "sig", ""))
+  
+  #print pvals for testing, TODO: remove later
+  print(pvals)
   
   #return adjusted p-value
   case <- filter(pvals, id == title)
