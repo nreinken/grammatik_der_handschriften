@@ -11,7 +11,7 @@ if(!require(chisq.posthoc.test)){install.packages("chisq.posthoc.test")}
 
 cont_test <- function(data, x.title = "", y.title = "")
 {
-  title = paste0(x.title, "x", y.title)
+  title = paste0(x.title, "X", y.title)
   t <- table(data)
   print(t)
   

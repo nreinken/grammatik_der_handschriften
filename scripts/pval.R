@@ -8,26 +8,29 @@ library(tidyverse)
 
 pval <- function (pvalue, title)
 {
-
-  #create tibble for p-values, if it doesn't exist
+  #create tibble for p-values in the global environment, if it doesn't exist
   if(!exists("pvals"))
   {
-    pvals = dplyr::tibble(id = "", pvalue = 0)
+    assign("pvals", dplyr::tibble(id = "", pvalue = 0), envir = globalenv())
   }
   
   #store p-value
-  pvals <- add_row(pvals, tibble_row(id = title, pvalue = pvalue))
+  pvals.loc <- pvals
+  pvals.loc <- add_row(pvals.loc, tibble_row(id = title, pvalue = pvalue))
   
   
   #remove duplicates and empty rows
-  pvals <- distinct(pvals)
-  pvals <- filter(pvals, id != "") 
+  pvals.loc <- distinct(pvals.loc)
+  pvals.loc <- filter(pvals.loc, id != "") 
   
   #apply bonferoni-holm correction
-  pvals$padj <- round(p.adjust(pvals$pvalue, method = "holm"),5)
+  pvals.loc$padj <- round(p.adjust(pvals.loc$pvalue, method = "holm"),5)
   
   #print pvals for testing, TODO: remove later
-  print(pvals)
+  print(pvals.loc)
+  
+  #store pvals in the global environment to use it in the next call of this function
+  assign("pvals", pvals.loc, envir = globalenv())
   
   #return adjusted p-value
   case <- filter(pvals, id == title)
