@@ -48,7 +48,7 @@ data_complexGraphemes_binary <- droplevels(data_complexGraphemes_binary)
 table(data_complexGraphemes_binary)
 
 #run contingency test
-cont_test(data = data_complexGraphemes_binary, x.title = "Komplexität", y.title = "Verbindung")
+cont_test(data = data_complexGraphemes_binary, x.title = "complexity", y.title = "junction")
 
 #compare complex graphemes individually
 #<rh> is too rare, so it's omitted
@@ -64,4 +64,27 @@ data_complexGraphemes_single <- droplevels(data_complexGraphemes_single)
 
 #get frequency table
 table(data_complexGraphemes_single)
-cont_test(data = data_complexGraphemes_single, x.title = "Komplexität_nurKomplexe", y.title = "Verbindung")
+cont_test(data = data_complexGraphemes_single, x.title = "complexity_onlyComplex", y.title = "junction")
+
+
+#case study: compare <ng> and <el> as potentially complex graphemes
+#select ng cases
+data_complexGraphemes_ng <- filter(data_complexGraphemes, graph_complexity %in% c("ng", "FALSE"))
+data_complexGraphemes_ng$graph_complexity <- ifelse(data_complexGraphemes_ng$graph_complexity == "FALSE", "not <ng>", "<ng>")
+
+#get frequency table
+table(data_complexGraphemes_ng)
+
+#run contingency test
+cont_test(data_complexGraphemes_ng, x.title = "complexity_ng", y.title = "junction")
+
+
+#select el cases
+data_complexGraphemes_el <- filter(data_complexGraphemes, graph_complexity %in% c("el", "FALSE"))
+data_complexGraphemes_el$graph_complexity <- ifelse(data_complexGraphemes_el$graph_complexity == "FALSE", "not <el>", "<el>")
+
+#get frequency table
+table(data_complexGraphemes_el)
+
+#run contingency test
+cont_test(data_complexGraphemes_el, x.title = "complexity_el", y.title = "junction")
