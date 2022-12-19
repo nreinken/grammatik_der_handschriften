@@ -61,5 +61,4 @@ cont_test <- function(data, x.title = "", y.title = "")
   data <- NULL
   t <- NULL
   test <- NULL
-  gc(verbose = F)
 }
