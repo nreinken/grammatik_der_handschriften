@@ -46,4 +46,4 @@ data_complexGraphemes_binary <- droplevels(data_complexGraphemes_binary)
 
 #get frequency table
 table(data_complexGraphemes_binary)
-test <- cont_test(data = data_complexGraphemes_binary, title = "complex vs not complex")
+test <- cont_test(data = data_complexGraphemes_binary, x.title = "Komplexität", y.title = "Verbindung")

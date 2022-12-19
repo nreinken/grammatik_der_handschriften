@@ -4,16 +4,18 @@
 #version 1, December 2022
 
 source("scripts/pval.R")
+source("scripts/graphics.R")
 
 if(!require(vcd)){install.packages("vcd")}
 if(!require(chisq.posthoc.test)){install.packages("chisq.posthoc.test")}
 
-cont_test <- function(data, title = "not specified")
+cont_test <- function(data, x.title = "", y.title = "")
 {
+  title = paste0(x.title, "x", y.title)
   t <- table(data)
   print(t)
   
-  #determine wether to use fisher's exact test or chi square
+  #determine whether to use fisher's exact test or chi square
   pre_test <- chisq.test(t)
   fisher <- if(min(pre_test$expected) < 5) T else F
 
@@ -50,10 +52,13 @@ cont_test <- function(data, title = "not specified")
     #run post hocs
     print(vcd::assocstats(t))
     print(chisq.posthoc.test::chisq.posthoc.test(t))
+    
+    #create graphical output
+    (plot_assoc(test, x.title = x.title, y.title = y.title))
   }
 
   #clean up and return
   data <- NULL
   t <- NULL
-  return()
+  return(test)
 }
