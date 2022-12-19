@@ -54,11 +54,12 @@ cont_test <- function(data, x.title = "", y.title = "")
     print(chisq.posthoc.test::chisq.posthoc.test(t))
     
     #create graphical output
-    (plot_assoc(test, x.title = x.title, y.title = y.title))
+    plot_assoc(test, x.title = x.title, y.title = y.title)
   }
 
   #clean up and return
   data <- NULL
   t <- NULL
-  return(test)
+  test <- NULL
+  gc(verbose = F)
 }
