@@ -17,6 +17,9 @@ options(scipen = 999)
 #load data
 data_complexGraphemes <- data.loadData(whichColumns = c("junc_border", "graph_complexity"))
 
+#save dataset with pseudo-complex graphemes for later use
+data_complexGraphemes_pseudo <- data_complexGraphemes
+
 #rename some factor levels
 data_complexGraphemes$junc_border <- plyr::revalue(data_complexGraphemes$junc_border, c("TRUE" = "separation", "FALSE" = "connection"))
 data_complexGraphemes$graph_complexity <- plyr::revalue(data_complexGraphemes$graph_complexity, c("pseudo-rh" = "FALSE", "pseudo-th" = "FALSE", "pseudo-st" = "FALSE"))
@@ -44,10 +47,16 @@ newValues <- c("ch" = "complex",
 data_complexGraphemes_binary$graph_complexity <- plyr::revalue(data_complexGraphemes_binary$graph_complexity, newValues)
 data_complexGraphemes_binary <- droplevels(data_complexGraphemes_binary)
 
-#get frequency table
-table(data_complexGraphemes_binary)
+#contrast th and pseudo-th#
+data_complexGraphemes_th <- filter(data_complexGraphemes_pseudo, graph_complexity %in% c("th", "pseudo-th"))
+data_complexGraphemes_th <- droplevels(data_complexGraphemes_th)
 
-#run contingency test
+#get frequency table and run contingency test
+table(data_complexGraphemes_th)
+cont_test(data_complexGraphemes_th, x.title = "complexity_th", y.title = "junction")
+
+#get frequency table and run contingency test
+table(data_complexGraphemes_binary)
 cont_test(data = data_complexGraphemes_binary, x.title = "complexity", y.title = "junction")
 
 #compare complex graphemes individually
@@ -62,7 +71,7 @@ data_complexGraphemes_single <- filter(data_complexGraphemes_single, !graph_comp
 data_complexGraphemes_single <- filter(data_complexGraphemes_single, !graph_complexity == "FALSE")
 data_complexGraphemes_single <- droplevels(data_complexGraphemes_single)
 
-#get frequency table
+#get frequency table and run contingency test
 table(data_complexGraphemes_single)
 cont_test(data = data_complexGraphemes_single, x.title = "complexity_onlyComplex", y.title = "junction")
 
@@ -72,19 +81,14 @@ cont_test(data = data_complexGraphemes_single, x.title = "complexity_onlyComplex
 data_complexGraphemes_ng <- filter(data_complexGraphemes, graph_complexity %in% c("ng", "FALSE"))
 data_complexGraphemes_ng$graph_complexity <- ifelse(data_complexGraphemes_ng$graph_complexity == "FALSE", "not <ng>", "<ng>")
 
-#get frequency table
+#get frequency table and run contingency test
 table(data_complexGraphemes_ng)
-
-#run contingency test
 cont_test(data_complexGraphemes_ng, x.title = "complexity_ng", y.title = "junction")
-
 
 #select el cases
 data_complexGraphemes_el <- filter(data_complexGraphemes, graph_complexity %in% c("el", "FALSE"))
 data_complexGraphemes_el$graph_complexity <- ifelse(data_complexGraphemes_el$graph_complexity == "FALSE", "not <el>", "<el>")
 
-#get frequency table
+#get frequency table and run contingency test
 table(data_complexGraphemes_el)
-
-#run contingency test
 cont_test(data_complexGraphemes_el, x.title = "complexity_el", y.title = "junction")
