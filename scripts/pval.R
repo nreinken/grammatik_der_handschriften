@@ -20,8 +20,8 @@ pval <- function (pvalue, title)
   
   
   #remove duplicates and empty rows
-  pvals.loc <- distinct(pvals.loc)
   pvals.loc <- filter(pvals.loc, id != "") 
+  pvals.loc <- distinct(pvals.loc)
   
   #apply bonferoni-holm correction
   pvals.loc$padj <- round(p.adjust(pvals.loc$pvalue, method = "holm"),5)

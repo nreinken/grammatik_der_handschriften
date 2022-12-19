@@ -12,15 +12,15 @@ source("scripts/contingencyTests.R")
 
 options(scipen = 999)
 
-# Complex graphemes ====
+#Complex graphemes ====
 
 #load data
-data_complexGraphemes <- data.loadData(whichColumns = c("junc_border", "graph_complexity", "letter_rec"))
+data_complexGraphemes <- data.loadData(whichColumns = c("junc_border", "graph_complexity", "letter_rec", "code", "graph_complexity_both"))
 
 #rename some factor levels
 data_complexGraphemes$junc_border <- plyr::revalue(data_complexGraphemes$junc_border, c("TRUE" = "separation", "FALSE" = "connection"))
 
-#save dataset with pseudo-complex graphemes and with <sch> for later use
+#save dataset with pseudo-complex graphemes and with letters for later use
 data_complexGraphemes_pseudo <- data_complexGraphemes
 data_complexGraphemes_withLetter <- data_complexGraphemes
 
@@ -31,16 +31,20 @@ data_complexGraphemes$graph_complexity <- plyr::revalue(data_complexGraphemes$gr
 data_complexGraphemes <- filter(data_complexGraphemes, !graph_complexity == "sch")
 data_complexGraphemes <- droplevels(data_complexGraphemes)
 
-#remove letter_rec where it's not needed
+#remove letter_rec, code, and graph_complexity_both where they're not needed
 data_complexGraphemes$letter_rec <- NULL
+data_complexGraphemes$code <- NULL
+data_complexGraphemes$graph_complexity_both <- NULL
 data_complexGraphemes_pseudo$letter_rec <- NULL
+data_complexGraphemes_pseudo$code <- NULL
+data_complexGraphemes_pseudo$graph_complexity_both <- NULL
 data_complexGraphemes <- droplevels(data_complexGraphemes)
 data_complexGraphemes_pseudo <- droplevels(data_complexGraphemes_pseudo)
 
 #get a frequency table
 table(data_complexGraphemes$graph_complexity)
 
-#  contrast complex graphemes against single letter graphemes ====
+#  Contrast complex graphemes against single letter graphemes ====
 data_complexGraphemes_binary <- data_complexGraphemes
 newValues <- c("ch" = "complex",
                "rh" = "complex",
@@ -60,7 +64,10 @@ data_complexGraphemes_binary <- droplevels(data_complexGraphemes_binary)
 table(data_complexGraphemes_binary)
 cont_test(data = data_complexGraphemes_binary, x.title = "complexity", y.title = "junction")
 
-#  contrast th and pseudo-th ====
+#clean up
+rm(data_complexGraphemes_binary)
+
+#  Contrast <th> and pseudo-<th> ====
 data_complexGraphemes_th <- filter(data_complexGraphemes_pseudo, graph_complexity %in% c("th", "pseudo-th"))
 data_complexGraphemes_th <- droplevels(data_complexGraphemes_th)
 
@@ -68,8 +75,11 @@ data_complexGraphemes_th <- droplevels(data_complexGraphemes_th)
 table(data_complexGraphemes_th)
 cont_test(data_complexGraphemes_th, x.title = "complexity_th", y.title = "junction")
 
+#clean up
+rm(data_complexGraphemes_th)
+rm(data_complexGraphemes_pseudo)
 
-#  compare complex graphemes individually ====
+#  Compare complex graphemes individually ====
 #<rh> is too rare, so it's omitted
 data_complexGraphemes_single <- filter(data_complexGraphemes, !graph_complexity == "rh")
 
@@ -85,27 +95,40 @@ data_complexGraphemes_single <- droplevels(data_complexGraphemes_single)
 table(data_complexGraphemes_single)
 cont_test(data = data_complexGraphemes_single, x.title = "complexity_onlyComplex", y.title = "junction")
 
-#  analyse <sch> ====
+#clean up
+rm(data_complexGraphemes_single)
+
+#  Analyse <sch> ====
 #select <sch> cases
 data_complexGraphemes_sch <- filter(data_complexGraphemes_withLetter, graph_complexity %in% c("sch", "FALSE"))
 data_complexGraphemes_sch$letter_rec <- NULL
+data_complexGraphemes_sch$code <- NULL
+data_complexGraphemes_sch$graph_complexity_both <- NULL
 data_complexGraphemes_sch <- droplevels(data_complexGraphemes_sch)
 
 #get frequency table and run contingency test
 table(data_complexGraphemes_sch)
 cont_test(data_complexGraphemes_sch, x.title = "complexity_sch", y.title = "junction")
 
+#clean up
+rm(data_complexGraphemes_sch)
+
 #separation between s and ch
-data_complexGraphemes_sc <- filter(data_complexGraphemes_withLetter, graph_complexity == "sch")
-data_complexGraphemes_sc <- filter(data_complexGraphemes_sc, letter_rec %in% c("s", "c"))
+data_complexGraphemes_sc <- filter(data_complexGraphemes_withLetter, letter_rec %in% c("s", "c"))
+data_complexGraphemes_sc <- filter(data_complexGraphemes_sc, graph_complexity == "sch")
 data_complexGraphemes_sc$graph_complexity <- NULL
+data_complexGraphemes_sc$code <- NULL
+data_complexGraphemes_sc$graph_complexity_both <- NULL
 data_complexGraphemes_sc <- droplevels(data_complexGraphemes_sc)
 
 #get frequency table and run contingency test
 table(data_complexGraphemes_sc)
 cont_test(data_complexGraphemes_sc, x.title = "complexity_sc", y.title = "junction")
 
-#  case study: compare <ng> and <el> as potentially complex graphemes ====
+#clean up
+rm(data_complexGraphemes_sc)
+
+#  Case study: compare <ng> and <el> as potentially complex graphemes ====
 #select <ng> cases
 data_complexGraphemes_ng <- filter(data_complexGraphemes, graph_complexity %in% c("ng", "FALSE"))
 data_complexGraphemes_ng$graph_complexity <- ifelse(data_complexGraphemes_ng$graph_complexity == "FALSE", "not <ng>", "<ng>")
@@ -114,6 +137,9 @@ data_complexGraphemes_ng$graph_complexity <- ifelse(data_complexGraphemes_ng$gra
 table(data_complexGraphemes_ng)
 cont_test(data_complexGraphemes_ng, x.title = "complexity_ng", y.title = "junction")
 
+#clean up
+rm(data_complexGraphemes_ng)
+
 #select <el> cases
 data_complexGraphemes_el <- filter(data_complexGraphemes, graph_complexity %in% c("el", "FALSE"))
 data_complexGraphemes_el$graph_complexity <- ifelse(data_complexGraphemes_el$graph_complexity == "FALSE", "not <el>", "<el>")
@@ -121,3 +147,45 @@ data_complexGraphemes_el$graph_complexity <- ifelse(data_complexGraphemes_el$gra
 #get frequency table and run contingency test
 table(data_complexGraphemes_el)
 cont_test(data_complexGraphemes_el, x.title = "complexity_el", y.title = "junction")
+
+#clean up
+rm(data_complexGraphemes_el)
+
+#  Are there special letter forms in complex graphemes? ====
+#remove all letters not occuring in complex graphemes or not regognizable
+test_letters <- c("k", "h", "t", "n", "g", "e", "l")
+data_complexGraphemes_letterForms <- filter(data_complexGraphemes_withLetter, letter_rec %in% test_letters)
+data_complexGraphemes_letterForms <- filter(data_complexGraphemes_letterForms, !str_detect(code, "99"))
+
+data_complexGraphemes_letterForms$graph_complexity <- NULL
+data_complexGraphemes_letterForms$junc_border <- NULL
+
+#contrast complex graphemes and single letter graphemes
+data_complexGraphemes_letterForms$graph_complexity_both <- plyr::revalue(data_complexGraphemes_letterForms$graph_complexity_both, c("ch" = "complex",
+                                                              "ck" = "complex",
+                                                              "FALSE" = "not complex",
+                                                              "th" = "complex",
+                                                              "ng" = "complex",
+                                                              "el" = "complex"))
+data_complexGraphemes_letterForms <- droplevels(data_complexGraphemes_letterForms)
+
+#since the frequencies are dependent on the overall letter frequency, I need to test for each letter individually
+for(letter in test_letters)
+{
+  data_complexGraphemes_letter <- filter(data_complexGraphemes_letterForms, letter_rec == letter)
+  data_complexGraphemes_letter$letter_rec <- NULL
+  data_complexGraphemes_letter <- droplevels(data_complexGraphemes_letter)
+  
+  print(table(data_complexGraphemes_letter))
+  cont_test(data_complexGraphemes_letter, x.title = paste0(letter,"-form"), y.title = "complexity")
+}
+
+#and that's the analysis of complexe graphemes
+#clean up
+rm(data_complexGraphemes)
+rm(data_complexGraphemes_letter)
+rm(data_complexGraphemes_letterForms)
+rm(data_complexGraphemes_withLetter)
+rm(letter)
+rm(newValues)
+rm(test_letters)
