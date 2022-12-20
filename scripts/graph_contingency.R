@@ -11,6 +11,80 @@ source("scripts/dataHandling.R")
 source("scripts/contingencyTests.R")
 
 options(scipen = 999)
+#create a notin-operator
+`%notin%` <- Negate(`%in%`)
+
+#Distinctivity at syllable positions ====
+
+#load data
+d_dist <- data.loadData(whichColumns = c("letter_rec", "code", "gsyll_struc"), removeWaZ = F, removeUpperCase = T, removeUnrecognisable = T)
+
+#reorder the factor levels of gsyll_struc
+d_dist$gsyll_struc <- factor(d_dist$gsyll_struc, levels = c("ONS", "NUC", "KEY", "CODA", "EXTRA"))
+
+#  test single letters ====
+test_letters <- c("e")
+
+for (letter in test_letters)
+{
+  d_dist_temp <- filter(d_dist, letter_rec == letter)
+  d_dist_temp$letter_rec = NULL
+  d_dist_temp <- droplevels(d_dist_temp)
+  #get table and contingency tests
+  (table(d_dist_temp))
+  cont_test(d_dist_temp, x.title = paste0("gsyll_",letter), y.title = "form")
+}
+#clean up
+rm(letter, test_letters, d_dist_temp)
+
+
+#  test multiple letters and compare them ====
+letter_pairs <- list(c("a5", "o3"), 
+                     c("f7", "t3"), 
+                     c("f9", "h6", "l2", "t4"),
+                     c("h1", "k3"),
+                     c("h5", "l1"),
+                     c("n1", "u1"),
+                     c("r2", "v1"))
+
+for (pair in letter_pairs)
+{
+  print(pair)
+  #get letter recs
+  letter_recs <- substr(pair, 1,1)
+  
+  d_dist_temp <- droplevels(filter(d_dist, letter_rec %in% letter_recs))
+  
+  #we need to cast "code" to characters for now, so we can add a new factor level more easily
+  d_dist_temp$code <- as.character(d_dist_temp$code)
+  
+  #contrast the reduced form to every other form
+  d_dist_temp$code[d_dist_temp$code %notin% pair] <- "other form"
+  
+  #recast to factor
+  d_dist_temp$code <- as.factor(d_dist_temp$code)
+  
+  #make sure "other form" is at the start of the level list
+  forcats::fct_relevel(d_dist_temp$code, "other form", after = 0)
+
+  #now send the individual letters for checking
+  for (form in pair)
+  {
+    print(form)
+    letter <- substr(form, 1, 1)
+    
+    d_dist_temp2 <- filter(d_dist_temp, letter_rec == letter)
+    d_dist_temp2$letter_rec = NULL
+    d_dist_temp2 <- droplevels(d_dist_temp2)
+    
+    #get table and contingency tests
+    (table(d_dist_temp2))
+    cont_test(d_dist_temp2, x.title = paste0("gsyll_",form), y.title = "form")
+  }
+}
+#clean up
+rm(d_dist, d_dist_temp, d_dist_temp2, letter_pairs, form, letter, letter_recs, pair)
+
 
 #Complex graphemes ====
 
@@ -132,6 +206,7 @@ rm(d_complex_sc)
 #select <ng> cases
 d_complex_ng <- filter(d_complex, graph_complexity %in% c("ng", "FALSE"))
 d_complex_ng$graph_complexity <- ifelse(d_complex_ng$graph_complexity == "FALSE", "not <ng>", "<ng>")
+d_complex_ng$graph_complexity <- factor(d_complex_ng$graph_complexity)
 
 #get frequency table and run contingency test
 table(d_complex_ng)
@@ -143,6 +218,8 @@ rm(d_complex_ng)
 #select <el> cases
 d_complex_el <- filter(d_complex, graph_complexity %in% c("el", "FALSE"))
 d_complex_el$graph_complexity <- ifelse(d_complex_el$graph_complexity == "FALSE", "not <el>", "<el>")
+d_complex_el$graph_complexity <- factor(d_complex_el$graph_complexity)
+
 
 #get frequency table and run contingency test
 table(d_complex_el)
@@ -162,11 +239,11 @@ d_complex_letterForms$junc_border <- NULL
 
 #contrast complex graphemes and single letter graphemes
 d_complex_letterForms$graph_complexity_both <- plyr::revalue(d_complex_letterForms$graph_complexity_both, c("ch" = "complex",
-                                                              "ck" = "complex",
-                                                              "FALSE" = "not complex",
-                                                              "th" = "complex",
-                                                              "ng" = "complex",
-                                                              "el" = "complex"))
+                                                                                                            "ck" = "complex",
+                                                                                                            "FALSE" = "not complex",
+                                                                                                            "th" = "complex",
+                                                                                                            "ng" = "complex",
+                                                                                                            "el" = "complex"))
 d_complex_letterForms <- droplevels(d_complex_letterForms)
 
 #since the frequencies are dependent on the overall letter frequency, I need to test for each letter individually
