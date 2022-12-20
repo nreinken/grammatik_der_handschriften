@@ -15,17 +15,25 @@ cont_test <- function(data, x.title = "", y.title = "")
   t <- table(data)
   print(t)
   
+  #check if there are enough levels for contingency tests
+  temp <- as.data.frame(data)
+  if(nlevels(temp[,1]) <= 1 || nlevels(temp[,2]) <= 1)
+  {
+    print("at least one column has only one factor level; no further contingency analysis possible.")
+    return()
+  }
+  temp <- NULL
+  
   #determine whether to use fisher's exact test or chi square
-  pre_test <- chisq.test(t)
+  suppressWarnings(pre_test <- chisq.test(t))
   fisher <- if(min(pre_test$expected) < 5) T else F
 
   #calculate contingency tests
-  if(fisher == T)
+  if(fisher)
   {
     print("Fisher-Test")
     print(test <- fisher.test(t, simulate.p.value = T))
-  }
-  else
+  } else
   {
     print("Chi-Quadrat-Test")
     print(test <- chisq.test(t))
@@ -44,8 +52,7 @@ cont_test <- function(data, x.title = "", y.title = "")
   if(padj >= 0.05)
   {
     print("### adjusted p-value is not significant ###")
-  }
-  else
+  }   else
   {
     print("adjusted p-value is significant")
     
@@ -54,7 +61,7 @@ cont_test <- function(data, x.title = "", y.title = "")
     print(chisq.posthoc.test::chisq.posthoc.test(t))
     
     #create graphical output
-    plot_assoc(test, x.title = x.title, y.title = y.title)
+    suppressWarnings(plot_assoc(chisq.test(t), x.title = x.title, y.title = y.title))
   }
 
   #clean up and return
