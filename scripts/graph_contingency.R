@@ -86,6 +86,58 @@ for (pair in letter_pairs)
 rm(d_dist, d_dist_temp, d_dist_temp2, letter_pairs, form, letter, letter_recs, pair)
 
 
+
+#Double Consonants
+#load data
+d_dbl <- data.loadData(whichColumns = c("letter_rec", "code", "double_cons", "double_index"), removeWaZ = F, removeWordEnds = F, removeUpperCase = T, removeUnrecognisable = T)
+
+#filter cases with no double consonants
+d_dbl <- filter(d_dbl, !is.na(double_cons))
+
+#get frequencies
+table(d_dbl$double_cons)
+
+#check if there are form differences between the first and second part of the letter
+double_consonants <- c("ff", "ll", "mm", "nn", "rr", "ss", "tt")
+
+for(double_consonant in double_consonants)
+{
+  print(double_consonant)
+  d_dbl_diffs <- filter(d_dbl, double_cons == double_consonant)
+  d_dbl_diffs <- droplevels(select(d_dbl_diffs, code, double_index))
+  d_dbl_diffs$double_index <- as.factor(d_dbl_diffs$double_index)
+  table(d_dbl_diffs)
+  cont_test(d_dbl_diffs, x.title = paste0("double_cons_position",double_consonant), y.title = "form")
+}
+
+#check if the double consonant parts have the same shape
+for(level in levels(d_dbl$double_cons))
+{
+  #select first double consonant in parameter list
+  same_form <- NULL
+  d_dbl_forms <- droplevels(filter(d_dbl, double_cons == level))
+  for(index in 1:nrow(d_dbl_forms))
+  {
+    case <- d_dbl_forms[index,]
+    if(case$double_index == 1)
+    {
+      #go to the next case (that is the second part of the double consonant) and check whether it has the same shape
+      case_next <- d_dbl_forms[index + 1,]
+      same_form <- rbind(same_form, case$code == case_next$code) 
+    }
+  }
+  print(level)
+  print("gleiche Formen:")
+  print(table(same_form))
+  
+  #clean up
+  rm(case, case_next, d_dbl_forms, same_form, double_consonant, index)
+}
+
+#clean up
+rm(double_consonants, level, d_dbl, d_dbl_diffs)
+
+
 #Complex graphemes ====
 
 #load data
