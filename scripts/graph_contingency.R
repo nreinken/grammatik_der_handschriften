@@ -14,6 +14,23 @@ options(scipen = 999)
 #create a notin-operator
 `%notin%` <- Negate(`%in%`)
 
+#Form and function of <e> ====
+#load data
+d_e <- data.loadData(whichColumns = c("code", "e_func"), letter = "e", removeUpperCase = T, removeUnrecognisable = T, removeWaZ = F, removeWordEnds = F)
+
+#remove Umlaut-e and etymological e because they are to rare
+d_e <- droplevels(filter(d_e, !e_func %in% c("UML", "ETYM")))
+
+#sort factors
+d_e$e_func <- factor(d_e$e_func, c("FULL", "DIPHTHONG", "LENGTH", "RED"))
+
+#get frequency table and contingency test
+table(d_e)
+cont_test(d_e, x.title = "efunc", y.title = "eform")
+
+#clean up
+rm(d_e)
+
 #Distinctivity at syllable positions ====
 
 #load data
