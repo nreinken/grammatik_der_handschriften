@@ -383,3 +383,17 @@ cont_test(d_gfoot_onlyTro, x.title = "Onlytro_gfootBorder", y.title = "junction"
 
 #clean up
 rm(d_gfoot, d_gfoot_dac, d_gfoot_tro, d_gfoot_onlyTro)
+
+#Form and function of <h> ====
+#load data
+d_h <- data.loadData(whichColumns = c("code", "h_func"), letter = "h", removeUpperCase = T, removeUnrecognisable = T, removeWaZ = F, removeWordEnds = F)
+
+#sort factors
+d_h$h_func <- factor(d_h$h_func, c("PHONO", "GRAPH", "SINI", "DEHN", "ETYM"))
+
+#get frequency table and contingency test
+table(d_h)
+cont_test(d_h, x.title = "hfunc", y.title = "hform")
+
+#clean up
+rm(d_h)
