@@ -7,17 +7,28 @@ if(!require(tidyverse)){install.packages("tidyverse")}
 if(!require(janitor)){install.packages("janitor")}
 library(tidyverse)
 
-data.loadData <- function(whichColumns = "", removeWaZ = T, removeWordEnds = F, removeUpperCase = F, removeUnrecognisable = F)
+data.loadData <- function(whichColumns = "", letter = NULL, removeWaZ = T, removeWordEnds = F, removeUpperCase = F, removeUnrecognisable = F)
 {
-  d <- readr::read_csv2("Graphen_MAIN.csv")
+ 
+  #determine the columns to be loaded
+  whichColumns_intern <- append(whichColumns, c("letter_rec", "WaZ", "word_struc", "code"))
+  whichColumns_intern <- unique(whichColumns_intern)
+  
+  d <- readr::read_csv2("Graphen_MAIN.csv", col_select = all_of(whichColumns_intern))
   d <- janitor::remove_empty(d, which = c("rows", "cols"))
+  
+  #keep only needed letters
+  if(!is.null(letter))
+  {
+    d <- filter(d, letter_rec %in% letter)
+  }
   
   #convert to factors and integers
   d <- d %>% mutate_if(is.character,as.factor)
   d <- d %>% mutate_if(is.logical,as.factor)
   d <- d %>% mutate_if(is.double,as.integer)
   
-  
+
   #remove line break separations
   if(removeWaZ)
   {
