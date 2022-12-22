@@ -335,3 +335,51 @@ rm(d_complex_withLetter)
 rm(letter)
 rm(newValues)
 rm(test_letters)
+
+#Graphematic feet ====
+#  Check if e form depends on syllable type ====
+d_esyll <- data.loadData(whichColumns = c("code", "gsyll_type"), letter = "e", removeWaZ = F, removeWordEnds = F, removeUpperCase = T, removeUnrecognisable = T)
+
+#get frequency table and run contingency tests
+#get frequency table and run contingency tests
+table(d_esyll)
+cont_test(d_esyll, x.title = "eForm", y.title = "syllableType")
+
+#clean up
+rm(d_esyll)
+
+#  check if the letters at foot borders are more often separated ====
+#load data
+d_gfoot <- data.loadData(whichColumns = c("junc_border", "gfoot_border", "gfoot"), removeUpperCase = F, removeUnrecognisable = F, removeWaZ = T, removeWordEnds = T)
+
+#only choose dactyli
+d_gfoot_dac <- filter(d_gfoot, gfoot == "DAK")
+d_gfoot_dac$gfoot <- NULL
+d_gfoot_dac <- droplevels(d_gfoot_dac)
+
+#get frequency table and run contingency tests
+table(d_gfoot_dac)
+cont_test(d_gfoot_dac, x.title = "dak_gfootBorder", y.title = "junction")
+
+#select only trochees
+d_gfoot_tro <- filter(d_gfoot, gfoot == "TRO")
+d_gfoot_tro$gfoot <- NULL
+d_gfoot_tro <- droplevels(d_gfoot_tro)
+
+#get frequency table and run contingency tests
+table(d_gfoot_tro)
+cont_test(d_gfoot_tro, x.title = "tro_gfootBorder", y.title = "junction")
+
+#choose only trochees from trochee-only-dataset
+#load data
+d_gfoot_onlyTro <- data.loadData(whichColumns = c("junc_border", "gfoot_border_noDac", "gfoot_noDac"), removeUpperCase = F, removeUnrecognisable = F, removeWaZ = T, removeWordEnds = T)
+d_gfoot_onlyTro <- filter(d_gfoot_onlyTro, gfoot_noDac == "TRO")
+d_gfoot_onlyTro$gfoot_noDac <- NULL
+d_gfoot_onlyTro <- droplevels(d_gfoot_onlyTro)
+
+#get frequency table and run contingency tests
+table(d_gfoot_onlyTro)
+cont_test(d_gfoot_onlyTro, x.title = "Onlytro_gfootBorder", y.title = "junction")
+
+#clean up
+rm(d_gfoot, d_gfoot_dac, d_gfoot_tro, d_gfoot_onlyTro)
