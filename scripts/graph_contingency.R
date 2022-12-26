@@ -155,6 +155,30 @@ for(level in levels(d_dbl$double_cons))
 rm(double_consonants, level, d_dbl, d_dbl_diffs)
 
 
+#<h> shape and junctions ####
+#load data
+d_h <- data.loadData(whichColumns = c("code", "junc_border_before", "junc_border"), letter = "h", removeWaZ = T, removeUnrecognisable = F, removeUpperCase = F, removeWordEnds = F)
+
+#rename factor levels
+d_h <- mutate(d_h, form = ifelse(code %in% c("h1", "h3", "h5"),"loop", "no loop"))
+d_h$form <- as.factor(d_h$form)
+d_h$code <- NULL
+
+#split into two different datasets
+d_h_before <- droplevels(select(d_h, form, junc_border_before))
+d_h$junc_border_before <- NULL
+d_h <- droplevels(d_h)
+
+#get frequency tables and run contingency tests
+table(d_h)
+cont_test(data = d_h, x.title = "junction", y.title = "h_shape")
+
+table(d_h_before)
+cont_test(data = d_h_before, x.title = "junction_before", y.title = "h_shape")
+
+#clean up
+rm(d_h, d_h_before)
+
 #Complex graphemes ====
 
 #load data
