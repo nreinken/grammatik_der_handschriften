@@ -14,6 +14,9 @@ options(scipen = 999)
 #create a notin-operator
 `%notin%` <- Negate(`%in%`)
 
+#add <ß> to global letters array
+letters <- append(letters, "ß")
+
 #Form and function of <e> ====
 #load data
 d_e <- data.loadData(whichColumns = c("code", "e_func"), letter = "e", removeUpperCase = T, removeUnrecognisable = T, removeWaZ = F, removeWordEnds = F)
@@ -182,6 +185,34 @@ for (letter in secondParts)
 }
 #clean up
 rm(letter, seconParts, d_diph, d_diph_single)
+
+#lettershapes in key position ====
+#load data
+d_key <- data.loadData(whichColumns = c("letter_rec", "code", "gsyll_struc"),
+                       removeUpperCase = T, removeUnrecognisable = T, removeWaZ = F, removeWordEnds = F)
+
+#contrast key-position against all other positions
+d_key$gsyll_struc <- plyr::revalue(d_key$gsyll_struc, c("ONS" = "not KEY", 
+                                                "NUC" = "not KEY", 
+                                                "EXTRA" = "not KEY", 
+                                                "CODA" = "not KEY"))
+d_key <- droplevels(d_key)
+
+for(letter in letters)
+{
+  print(letter)
+  
+  #choose single letter
+  d_key_single <- droplevels(filter(d_key, letter_rec == letter))
+  d_key_single$letter_rec <- NULL
+  
+  #run contingency test
+  print(table(d_key_single))
+  cont_test(d_key_single, x.title ="key", y.title=paste0(letter, "_form"))
+}
+
+#clean up
+rm(d_key, d_key_single, letter)
 
 #<h> shape and junctions ####
 #load data
