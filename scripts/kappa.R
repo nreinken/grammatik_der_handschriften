@@ -28,6 +28,6 @@ levels(d$code_val)
 summary(d)
 
 #calculate kappa
-vcd::Kappa(t)
+vcd::Kappa(table(d))
 
 
