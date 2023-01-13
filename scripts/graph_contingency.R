@@ -1,7 +1,7 @@
 #graph_contingency.R
 #analysis of graphical letter forms and their correlations with grammatical structures
 #based on scripts by Niklas Reinken, July 2021
-#version 1, December 2022
+#version 2, January 2023
 
 if(!require(tidyverse)){install.packages("tidyverse")}
 if(!require(plyr)){install.packages("plyr")}
@@ -154,6 +154,34 @@ for(level in levels(d_dbl$double_cons))
 #clean up
 rm(double_consonants, level, d_dbl, d_dbl_diffs)
 
+
+#lettershapes in diphthongs ====
+#load data
+d_diph <- data.loadData(whichColumns = c("code", "letter_rec", "phon_class", "gsyll_struc"),
+                        letter = c("a", "e", "i", "o", "u", "y"),
+                        removeUpperCase = T, removeUnrecognisable = T)
+#keep only letters that are used in vowels (relevant with <y>)
+d_diph <- droplevels(filter(d_diph, phon_class %in% c("VFULL", "n.V.")))
+d_diph$phon_class <- NULL
+
+#letters that can occur in the second part of a diphthong
+secondParts <- c("a", "e", "u")
+
+#run analysis for each possible letter in the second diphthong position
+for (letter in secondParts)
+{
+  print(letter)
+  #drop other letters
+  d_diph_single <- droplevels(filter(d_diph, letter_rec == letter))
+  
+  d_diph_single$letter_rec <- NULL
+  
+  #run contingency tests
+  print(table(d_diph_single))
+  cont_test(d_diph_single, x.title = "diphthong", y.title = paste0(letter, "_form"))
+}
+#clean up
+rm(letter, seconParts, d_diph, d_diph_single)
 
 #<h> shape and junctions ####
 #load data
