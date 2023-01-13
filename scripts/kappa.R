@@ -1,40 +1,33 @@
 #kappa.R
 #calculate intra rater reliability
-#© Niklas Reinken, August 2021
+#based on scripts by Niklas Reinken, August 2021
+#version 1, January 2023
 options(scipen = 999)
 
 #load libraries
-library(janitor)
-library(tidyverse)
-library(vcd)
-library(irr)
+if(!require(vcd)){install.packages("vcd")}
+
+source("scripts/dataHandling.R")
 
 #load data
-data <- read_csv2("Graphen_MAIN.csv")
-d <- remove_empty(data, which = c("rows", "cols"))
+d <- data.loadData(whichColumns = c("code", "code_val"), 
+                   removeWaZ = F, removeWordEnds =F,
+                   removeUpperCase = F, removeUnrecognisable = F)
 
-#select only necessary columns and cases
-d <- dplyr::select(d, code_neu, code_val)
-d <- filter(d, !is.na(d$code_val))
-
-#factorize
-d$code_neu <- factor(d$code_neu)
-d$code_val <- factor(d$code_val)
-d <- droplevels(d)
+#remove cases that have not been validated
+d <- droplevels(filter(d, !is.na(d$code_val)))
 
 #discard levels that do not occur in both ratings
-d <- filter(d, d$code_neu %in% levels(d$code_val))
-d <- droplevels(d)
-d <- filter(d, d$code_val %in% levels(d$code_neu))
-d <- filter(d, d$code_val != "k3")
-d <- droplevels(d)
-levels(d$code_neu)
+d <- droplevels(filter(d, d$code %in% levels(d$code_val)))
+d <- droplevels(filter(d, d$code_val %in% levels(d$code)))
+d <- droplevels(filter(d, d$code_val != "k8")) #for some reasons, k8 is not discarded despite it being only in code_val
+
+#show the levels
+levels(d$code)
 levels(d$code_val)
-str(d)
 summary(d)
 
 #calculate kappa
-(t <- table(d))
-(res.k <- Kappa(t))
+vcd::Kappa(t)
 
 
