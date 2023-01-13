@@ -467,6 +467,30 @@ cont_test(d_gfoot_onlyTro, x.title = "Onlytro_gfootBorder", y.title = "junction"
 #clean up
 rm(d_gfoot, d_gfoot_dac, d_gfoot_tro, d_gfoot_onlyTro)
 
+#Lettershapes at morphological positions ====
+#load data
+d_morph <- data.loadData(whichColumns = c("letter_rec", "code", "morphographic"), removeWaZ =  F, removeWordEnds = F, removeUpperCase = T, removeUnrecognisable = T)
+
+
+#run analysis for each letter
+for(letter in letters)
+{
+  #select only current letter
+  d_morph_single <- droplevels(filter(d_morph, letter_rec == letter))
+  d_morph_single$letter_rec <- NULL
+  print(letter)
+  
+  #run analysis
+  print(table(d_morph_single))
+  cont_test(d_morph_single, x.title ="morphographic", y.title =paste0(letter, "_form"))
+
+  #contrast reduced forms against all other forms
+  #TODO
+  }
+
+#clean up
+rm(letter, d_morph_single, d_morph)
+
 #Form and function of <h> ====
 #load data
 d_h <- data.loadData(whichColumns = c("code", "h_func"), letter = "h", removeUpperCase = T, removeUnrecognisable = T, removeWaZ = F, removeWordEnds = F)
