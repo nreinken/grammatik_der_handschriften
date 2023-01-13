@@ -17,5 +17,5 @@ Due to copyright reasons, I can't publish scans of the handwritten texts. Contac
 
 
 December 2022, Niklas Reinken  
-Carl von Ossietzky University Oldenburg  
-niklas.reinken1@uol.de  |  reinken@ids-mannheim.de
+Leibniz-Institut für Deutsche Sprache, Mannheim  
+reinken@ids-mannheim.de
