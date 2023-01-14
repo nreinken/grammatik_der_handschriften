@@ -488,8 +488,11 @@ for(letter in letters)
   #TODO
   }
 
+<<<<<<< HEAD
 #clean up
 rm(letter, d_morph_single, d_morph)
+=======
+>>>>>>> eff441975f3d6d267204901e5251f634325260bc
 
 #Form and function of <h> ====
 #load data
