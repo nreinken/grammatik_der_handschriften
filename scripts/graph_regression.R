@@ -11,10 +11,11 @@ library(tidyverse)
 
 source("scripts/dataHandling.R")
 source("scripts/regressions.R")
+source("scripts/graphics.R")
 
 options(scipen = 999)
 
-#Syntagmatic Variation ====
+#Syntagmatic variation ====
 #load data
 d_syn <- data.loadData(whichColumns =c("person_ID", "word_index", "junc_border", "letter_freq"), removeWaZ = T, removeWordEnds = T, removeUpperCase = F, removeUnrecognisable = T)
 
@@ -38,7 +39,7 @@ best.model <- full.model %>% MASS::stepAIC(direction = "both")
 outliers <- checkOutliers(best.model)
 
 #remove outliers and set up a new model
-if(!is.null(outliers))
+if(!is.empty(outliers))
 {
   print("Outliers detected; omitting overly influential cases and setting up new model")
   d_syn.train <- d_syn.train[-outliers, ]
@@ -108,3 +109,65 @@ write.csv(predictRates, "results/predictionRates_paradigmatic.csv")
 
 #clean up
 rm(d_par, predictRates, char, letters, rate)
+
+#Junctions and bigrams ====
+#load data
+d_bigr <- data.loadData(whichColumns = c("junc_border", "bigramm_next"), removeWaZ = T, removeWordEnds = T, removeUpperCase = T, removeUnrecognisable = F)
+
+#filter bigrams with a low frequency (less than 100)
+freqs <- data.frame(table(d_bigr$bigramm_next))
+low_freqs <- filter(freqs, Freq < 100)
+d_bigr <- droplevels(filter(d_bigr, !bigramm_next %in% low_freqs$Var1))
+rm(freqs, low_freqs)
+
+#set up test and training samples
+d_bigr.split <- split_set(d_bigr)
+d_bigr.train <- d_bigr.split$train.data
+d_bigr.test <- d_bigr.split$test.data
+rm(d_bigr.split)
+
+#set up model
+formula <- formula(junc_border ~ bigramm_next)
+full.model <- glm(formula, data = d_bigr.train, family = binomial())
+best.model <- full.model %>% stepAIC(direction = "both")
+
+#check for outliers
+outliers <- checkOutliers(best.model)
+
+#remove outliers and set up a new model
+if(!is_empty(outliers))
+{
+  print("Outliers detected; omitting overly influential cases and setting up new model")
+  d_bigr.train <- d_bigr.train[-outliers, ]
+  full.model <- glm(formula = formula, data = d_bigr.train, family = binomial)
+  best.model <- full.model %>% MASS::stepAIC(direction = "both")
+}
+rm(outliers)
+
+#there are no numeric variables in the model, so no assumptions can be checked
+
+#calculate coefficients and save them to a data frame
+coefs <- round(best.model$coefficients,2)
+coefs <- data.frame(coefs)
+coefs <- cbind(rownames(coefs), data.frame(coefs, row.names=NULL))
+coefs$`rownames(coefs)` <- str_replace_all(coefs$`rownames(coefs)`, "bigramm_next", "")
+
+#select significant variables
+toselect <- summary(best.model)$coeff[-1,4] < 0.05
+coefs <- coefs[toselect == TRUE,]
+coefs <- na.omit(coefs)
+#save to a .csv
+write.csv2(coefs, "results/coefs_junctionBigrams.csv")
+
+#plot the fifteen highest and lowest coefs
+max_coefs <- head(arrange(coefs, desc(coefs)),20)
+min_coefs <- tail(arrange(coefs, desc(coefs)),20)
+coefs_ext <- rbind(max_coefs, min_coefs)
+coefs_ext <- mutate(coefs_ext, pos = ifelse(coefs > 0, coefs + 0.7, coefs - 0.7))
+coefs_ext <- arrange(coefs_ext, desc(coefs))
+plot_coefs(coefs, name = "bigrams")
+
+#evaluate model
+summary(best.model)
+crossvalidate(best.model, d_bigr.test)
+descr::LogRegR2(best.model)
