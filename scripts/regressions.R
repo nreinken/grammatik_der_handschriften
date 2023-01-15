@@ -42,7 +42,7 @@ crossvalidate <- function(model, test.data)
 checkAssumptions <- function(model, data)
 {
   #check linearity ====
-  probabilities <- model %>% predict(d_syn, type = "response")
+  probabilities <- model %>% predict(data, type = "response")
   mydata <- data %>%
     dplyr::select_if(is.numeric)
   mydata <- log(mydata)
