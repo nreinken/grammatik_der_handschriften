@@ -14,8 +14,8 @@ split_set <- function(dataset)
   set.seed(8)
   training.samples <- dataset$junc_border %>% 
     caret::createDataPartition(p = 0.8, list = FALSE)
-  train.data  <- droplevels(d_syn[training.samples, ])
-  test.data <- droplevels(d_syn[-training.samples, ])
+  train.data  <- droplevels(dataset[training.samples, ])
+  test.data <- droplevels(dataset[-training.samples, ])
   return(list("train.data" = train.data, "test.data" = test.data))
 }
 
