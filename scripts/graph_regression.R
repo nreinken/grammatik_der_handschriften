@@ -51,7 +51,7 @@ rm(outliers)
 checkAssumptions(best.model, d_syn) #!!!CAUTION, this takes some time!!!
 
 #write coefficients to file
-write.csv(coef(best.model), "coefs_syntagmatic.csv")
+write.csv(coef(best.model), "results/coefs_syntagmatic.csv")
 
 #evaluate model
 summary(best.model)
@@ -104,7 +104,7 @@ for(char in letters)
 #show the results and store them to .csv
 colnames(predictRates) <- c("letter", "predictRate")
 print(predictRates)
-write.csv(predictRates, "predictionRates_paradigmatic.csv")
+write.csv(predictRates, "results/predictionRates_paradigmatic.csv")
 
 #clean up
 rm(d_par, predictRates, char, letters, rate)
