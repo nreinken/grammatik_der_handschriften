@@ -39,7 +39,7 @@ best.model <- full.model %>% MASS::stepAIC(direction = "both")
 outliers <- checkOutliers(best.model)
 
 #remove outliers and set up a new model
-if(!is.empty(outliers))
+if(!is_empty(outliers))
 {
   print("Outliers detected; omitting overly influential cases and setting up new model")
   d_syn.train <- d_syn.train[-outliers, ]
@@ -171,3 +171,6 @@ plot_coefs(coefs, name = "bigrams")
 summary(best.model)
 crossvalidate(best.model, d_bigr.test)
 descr::LogRegR2(best.model)
+
+#clean up
+rm(coefs_ext, d_bigr, d_bigr.test, d_bigr.train, full.model, max_coefs, min_coefs, best.model, coefs, formula, toselect)
