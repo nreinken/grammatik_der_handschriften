@@ -110,6 +110,88 @@ write.csv(predictRates, "results/predictionRates_paradigmatic.csv")
 #clean up
 rm(d_par, predictRates, char, letters, rate)
 
+#Junctions and letters ====
+#load data
+d_letters <- data.loadData(whichColumns = c("junc_border", "next_letter", "prev_letter"), 
+                           removeWaZ = T, removeWordEnds = T, removeUpperCase = T, removeUnrecognisable = F)
+
+#remove upper case letters in prev_letter
+d_letters <- droplevels(filter(d_letters, !prev_letter %in% c("A", "B", "C", "D", "E", "F", "G", "H", "I", 
+                                     "J", "K", "L", "M", "N", "O", "P", "Q", "R", 
+                                     "S", "T", "U", "V", "W", "X", "Y", "Z", "Ä", "Ö", "Ü")))
+
+
+#set up test and training samples
+d_letters.split <- split_set(d_letters)
+d_letters.train <- d_letters.split$train.data
+d_letters.test <- d_letters.split$test.data
+rm(d_letters.split)
+
+#set up model
+formula <- formula(junc_border ~ next_letter + prev_letter)
+full.model <- glm(formula, data = d_letters.train, family = binomial())
+best.model <- full.model %>% stepAIC(direction = "both")
+
+#check for outliers
+outliers <- checkOutliers(best.model)
+
+#remove outliers and set up a new model
+if(!is_empty(outliers))
+{
+  print("Outliers detected; omitting overly influential cases and setting up new model")
+  d_letters.train <- d_letters.train[-outliers, ]
+  full.model <- glm(formula = formula, data = d_letters.train, family = binomial)
+  best.model <- full.model %>% MASS::stepAIC(direction = "both")
+}
+rm(outliers)
+
+#there are no numeric variables in the model, so no assumptions can be checked
+
+#calculate coefficients
+coefs <- round(best.model$coefficients,3)
+coefs <- data.frame(coefs)
+coefs <- cbind(rownames(coefs), data.frame(coefs, row.names=NULL))
+coefs$`rownames(coefs)` <- str_replace_all(coefs$`rownames(coefs)`, "next_letter", "")
+
+#select significant variables
+toselect <- summary(best.model)$coeff[-1,4] < 0.05
+coefs <- coefs[toselect == TRUE,]
+coefs <- na.omit(coefs)
+#save coefficients to .csv
+write.csv2(coefs, "results/coefficients_letters.csv")
+
+#prepare coefficients for plotting
+coefs_ext <- arrange(coefs, desc(coefs))
+coefs_ext <- mutate(coefs_ext, color = ifelse(str_detect(`rownames(coefs)`,"prev_letter"), "previousLetter", "followingLetter"))
+coefs_ext$`rownames(coefs)` <- str_remove_all(coefs_ext$`rownames(coefs)`,"prev_letter")
+coefs_ext$`rownames(coefs)` <- str_remove_all(coefs_ext$`rownames(coefs)`,"next_letter")
+coefs_ext <- mutate(coefs_ext, name = `rownames(coefs)`)
+coefs_ext <- mutate(coefs_ext, pos = ifelse(coefs > 0, coefs + 0.7, coefs - 0.7))
+coefs_ext <- arrange(coefs_ext, desc(coefs))
+
+#split up into datasets for previous and following letter
+split.set <- split(coefs_ext, coefs_ext$color)
+
+#plot both coefficients sets
+plot_coefs(split.set$followingLetter, name = "followingLetter")
+plot_coefs(split.set$previousLetter, name = "previousLetter")
+
+rm(coefs, coefs_ext, split.set, toselect)
+
+summary(best.model)
+crossvalidate(best.model, d_letters.test)
+descr::LogRegR2(best.model)
+
+#interactions
+model.int <- glm(junc_border ~ next_letter * prev_letter,
+                 data = d_letters.train, family = binomial) #!!!CAUTION!!! takes a lot of time
+
+#is the model with interactions better than the model without?
+anova(best.model, model.int, test = "Chisq") #it's not better
+
+#clean up
+rm(best.model, coefs, coefs_ext, d_letters, d_letters.test, d_letters.train, full.model, model.int, split.set, formula, toselect)
+
 #Junctions and bigrams ====
 #load data
 d_bigr <- data.loadData(whichColumns = c("junc_border", "bigramm_next"), removeWaZ = T, removeWordEnds = T, removeUpperCase = T, removeUnrecognisable = F)
@@ -165,7 +247,7 @@ min_coefs <- tail(arrange(coefs, desc(coefs)),20)
 coefs_ext <- rbind(max_coefs, min_coefs)
 coefs_ext <- mutate(coefs_ext, pos = ifelse(coefs > 0, coefs + 0.7, coefs - 0.7))
 coefs_ext <- arrange(coefs_ext, desc(coefs))
-plot_coefs(coefs, name = "bigrams")
+plot_coefs(coefs_ext, name = "bigrams")
 
 #evaluate model
 summary(best.model)
