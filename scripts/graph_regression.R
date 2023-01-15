@@ -58,4 +58,17 @@ summary(best.model)
 crossvalidate(best.model, d_syn.test)
 descr::LogRegR2(best.model)
 
-#TODO Check interactions
+#check interactions
+
+#set up models with interactions
+model.int1 <- glm(junc_border ~ person_ID * log(word_index) + log(letter_freq),
+                  data = d_syn.train, family = binomial)
+model.int2 <- glm(junc_border ~ person_ID * log(letter_freq) + log(word_index),
+                  data = d_syn.train, family = binomial)
+
+#are the models with interactions better than the model without?
+anova(best.model, model.int1, model.int2, test = "Chisq")
+
+#model.int1 is slightly better than the default model
+summary(model.int1)
+LogRegR2(model.int1)
