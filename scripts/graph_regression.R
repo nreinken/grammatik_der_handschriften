@@ -72,3 +72,39 @@ anova(best.model, model.int1, model.int2, test = "Chisq")
 #model.int1 is slightly better than the default model
 summary(model.int1)
 LogRegR2(model.int1)
+
+#clean up
+rm(best.model, d_syn, d_syn.test, d_syn.train, full.model, model.int1, model.int2, formula)
+
+#Paradigmatic variation ====
+
+#load data
+d_par <- data.loadData(whichColumns=c("code", "letter", "person_ID", "word_index", "letter_freq"), removeWaZ = F, removeWordEnds = F, removeUpperCase = T, removeUnrecognisable = F)
+
+#factorize person ID
+d_par$person_ID <- factor(d_par$person_ID)
+
+#recode umlauts as base letters
+d_par$letter <- plyr::revalue(d_par$letter, c("ä" = "a", "ö" = "o", "ü" = "u"))
+d_par <- droplevels(d_par)
+
+#set up a dataframe for result collection
+predictRates <- data.frame()
+
+#set up paradigmatic variation models for each letter in list
+letters <- sort(unique(d_par$letter))
+for(char in letters)
+{
+  print(char)
+  rate <- paraModel(char, data = d_par)
+  #add prediction rate to data frame
+  predictRates <- rbind(predictRates, rate)
+}
+
+#show the results and store them to .csv
+colnames(predictRates) <- c("letter", "predictRate")
+print(predictRates)
+write.csv(predictRates, "predictionRates_paradigmatic.csv")
+
+#clean up
+rm(d_par, predictRates, char, letters, rate)

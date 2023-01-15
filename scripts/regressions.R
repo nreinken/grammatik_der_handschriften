@@ -6,6 +6,7 @@
 if(!require(caret)){install.packages("caret")}
 if(!require(car)){install.packages("car")}
 if(!require(tidyverse)){install.packages("tidyverse")}
+if(!require(nnet)){install.packages("nnet")}
 
 #function to split a dataset into 80% training data und 20% test data (based on the variable junc_border)
 split_set <- function(dataset)
@@ -33,7 +34,7 @@ crossvalidate <- function(model, test.data)
   predicted.classes <- ifelse(probabilities > 0.5, T, F)
   
   # Model accuracy
-  return(mean(predicted.classes == test.data$junc_border)) #about 66.7% of cases are predicted correctly
+  return(mean(predicted.classes == test.data$junc_border))
   
 }
 
@@ -81,4 +82,28 @@ checkAssumptions <- function(model, data)
   print(car::vif(model))
 }
 
+#function to create a multinom model for each letter
+paraModel <- function(character, data)
+{
+  data <- filter(data, data$letter == character)
+  data$letter <- NULL
+  data <- droplevels(data)
+  
+  #create train and test data
+  set.seed(8)
+  training.samples <- data$code %>%
+    createDataPartition(p = 0.8, list = F)
+  train.data <- data[training.samples,]
+  test.data <- data[-training.samples,]
+  
+  #set up model
+  model <- nnet::multinom(code ~ person_ID + word_index + letter_freq,
+                          data = train.data,
+                          MaxNWts = 9999, model = T)
+  #evaluate model
+  predicted.classes <- model %>% predict(test.data)
+  
+  result <- c(character, mean(predicted.classes == test.data$code))
+  return(result)
+}
  
