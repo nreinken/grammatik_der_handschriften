@@ -58,11 +58,11 @@ checkAssumptions <- function(model, data)
     facet_wrap(~predictors, scales = "free_y") +
     theme_bw()
   print("Check for linearity with graphical analysis, see plot")
-# print(plot) #deactivating for testing purposes (takes a long time)
+  print(plot) #deactivate for testing, takes a long time
   
   
   #check for overly influential data points ====
-  model.data <- augment(model) %>%
+  model.data <- broom::augment(model) %>%
     dplyr::mutate(index = 1:n())
   model.data %>% top_n(3, .cooksd)
   infl <- model.data %>%
