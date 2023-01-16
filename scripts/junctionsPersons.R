@@ -1,32 +1,21 @@
 #junctionsPersons.R
 #tests the junction frequency for each individual text
-#© Niklas Reinken, July 2021
-options(scipen = 0)
+#based on scripts by Niklas Reinken, July 2021
+#version 2, January 2023
 
-#load libraries
-library(janitor)
-library(beepr)
+if(!require(tidyverse)){install.packages("tidyverse")}
+if(!require(plyr)){install.packages("plyr")}
 library(tidyverse)
 
+source("scripts/dataHandling.R")
+
+options(scipen = 0)
+
 #load data
-d <- read_csv2("../Graphen_MAIN.csv")
-d <- remove_empty(d)
+d <- data.loadData(whichColumns = c("person_ID", "junc_border"), 
+                   removeWaZ = T, removeWordEnds = T, removeUpperCase = F, removeUnrecognisable = F)
 
-#select only necessary columns
-d <- dplyr::select(d, person_ID, junc_border, WaZ, word_struc)
-str(d)
-
-#factorize
-d$junc_border <- as.factor(d$junc_border)
 d$person_ID <- as.factor(d$person_ID)
-
-#remove line break separations and last letters
-d <- filter(d, d$WaZ != T)
-d <- filter(d, word_struc != "fin")
-d <- droplevels(d)
-glimpse(d)
-summary(d)
-
 
 prop.table(table(d$junc_border))
 
@@ -42,16 +31,16 @@ for(person in d_groups)
   junc_rates <- rbind(junc_rates, c(levels(person$person_ID), 
                                     round(prop.table(table(person$junc_border)),3)))
 }
-colnames(junc_rates) <- c("ID", "verbunden", "nicht verbunden")
-junc_rates <- junc_rates[order(junc_rates$verbunden),]
+colnames(junc_rates) <- c("ID", "connected", "not connected")
+junc_rates <- junc_rates[order(junc_rates$connected),]
 
 #write data frame to .csv
-write_csv2(junc_rates, "VerbindungsrateProPerson.csv")
+write_csv2(junc_rates, "results/junctionRates_person.csv")
 
 #group handwritings to cursive, block, or mixed
 breaks <- c(0,0.2,0.8,1)
-tags <- c("unverbunden","teilverbunden", "verbunden")
-group_tags <- cut(as.numeric(junc_rates$verbunden), 
+tags <- c("block","mixed", "cursive")
+group_tags <- cut(as.numeric(junc_rates$connected), 
                   breaks=breaks, 
                   include.lowest=TRUE, 
                   right=FALSE, 
@@ -61,9 +50,10 @@ junc_rates$group <- group_tags
 summary(group_tags)
 
 #plot density
-ggplot(data = junc_rates, aes(x = as.numeric(verbunden))) +
+ggplot(data = junc_rates, aes(x = as.numeric(connected))) +
   geom_histogram(binwidth = 0.05, alpha = 0.5, fill = "#222222") +
-  geom_density(color = "darkred") +
-  labs(x = "Verbundenheitsgrad", y = "Anzahl Texte") +
+  geom_density(color = "black") +
+  labs(x = "junction rate", y = "number of texts") +
   theme_minimal()
-ggsave("densityVerbundenheitsraten.png", width = 5, height = 3)
+ggsave("graphs/density_junctionRates.eps", width = 5, height = 3, device=cairo_ps)
+ggsave("graphs/density_junctionRates.png", width = 5, height = 3)
