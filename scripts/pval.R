@@ -1,5 +1,5 @@
 #pVal.R
-#automatically perfom bonferoni-holm-tests to p-values
+#automatically perform bonferoni-holm-tests to p-values
 #based on scripts by Niklas Reinken, July 2021
 #version 1, December 2022
 
@@ -27,7 +27,7 @@ pval <- function (pvalue, title)
   pvals.loc$padj <- round(p.adjust(pvals.loc$pvalue, method = "holm"),5)
   
   #print pvals for testing, TODO: remove later
-  print(pvals.loc)
+  #print(pvals.loc)
   
   #store pvals in the global environment to use it in the next call of this function
   assign("pvals", pvals.loc, envir = globalenv())
