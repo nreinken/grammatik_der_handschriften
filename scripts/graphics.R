@@ -36,11 +36,11 @@ plot_assoc <- function(test, x.title = "", y.title ="", eps = T, png = T)
 
 plot_coefs <- function(coefs, name, eps = T, png = T)
 {
-  ggplot(data = coefs, aes(x = reorder(`rownames(coefs)`, coefs), y = coefs)) +
+  ggplot(data = coefs, aes(x = reorder(rownames.coefs., coefs), y = coefs)) +
     geom_point(stat = "identity", size = 5, fill = "white", color ="#222222", shape = 16) +
-    geom_segment(aes(y = 0, x = `rownames(coefs)`, yend = coefs, xend = `rownames(coefs)`), color = "#222222") +
-    geom_text(aes(y = pos, label = str_c(`rownames(coefs)`,": ", coefs)) ,color = "#222222", size = 3) +
-    geom_segment(aes(x = length(`rownames(coefs)`)+1, y = 0, yend = 0, xend = 0), color = "black") +
+    geom_segment(aes(y = 0, x = rownames.coefs., yend = coefs, xend = rownames.coefs.), color = "#222222") +
+    geom_text(aes(y = pos, label = str_c(rownames.coefs.,": ", coefs)) ,color = "#222222", size = 3) +
+    geom_segment(aes(x = length(rownames.coefs.)+1, y = 0, yend = 0, xend = 0), color = "black") +
     coord_flip() +
     labs(y = "Coefficients", x = "") +
     theme_minimal()+

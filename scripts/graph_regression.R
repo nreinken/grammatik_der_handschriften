@@ -147,25 +147,15 @@ rm(outliers)
 
 #there are no numeric variables in the model, so no assumptions can be checked
 
-#calculate coefficients
-coefs <- round(best.model$coefficients,3)
-coefs <- data.frame(coefs)
-coefs <- cbind(rownames(coefs), data.frame(coefs, row.names=NULL))
-coefs$`rownames(coefs)` <- str_replace_all(coefs$`rownames(coefs)`, "next_letter", "")
-
-#select significant variables
-toselect <- summary(best.model)$coeff[-1,4] < 0.05
-coefs <- coefs[toselect == TRUE,]
-coefs <- na.omit(coefs)
-#save coefficients to .csv
-write.csv2(coefs, "results/coefficients_letters.csv")
+#calculate significant coefficients
+coefs <- getCoefs(best.model, varName = "next_letter", fileName = "letters")
 
 #prepare coefficients for plotting
 coefs_ext <- arrange(coefs, desc(coefs))
-coefs_ext <- mutate(coefs_ext, color = ifelse(str_detect(`rownames(coefs)`,"prev_letter"), "previousLetter", "followingLetter"))
-coefs_ext$`rownames(coefs)` <- str_remove_all(coefs_ext$`rownames(coefs)`,"prev_letter")
-coefs_ext$`rownames(coefs)` <- str_remove_all(coefs_ext$`rownames(coefs)`,"next_letter")
-coefs_ext <- mutate(coefs_ext, name = `rownames(coefs)`)
+coefs_ext <- mutate(coefs_ext, color = ifelse(str_detect(rownames.coefs.,"prev_letter"), "previousLetter", "followingLetter"))
+coefs_ext$rownames.coefs. <- str_remove_all(coefs_ext$rownames.coefs.,"prev_letter")
+coefs_ext$rownames.coefs. <- str_remove_all(coefs_ext$rownames.coefs.,"next_letter")
+coefs_ext <- mutate(coefs_ext, name = rownames.coefs.)
 coefs_ext <- mutate(coefs_ext, pos = ifelse(coefs > 0, coefs + 0.7, coefs - 0.7))
 coefs_ext <- arrange(coefs_ext, desc(coefs))
 
@@ -176,7 +166,7 @@ split.set <- split(coefs_ext, coefs_ext$color)
 plot_coefs(split.set$followingLetter, name = "followingLetter")
 plot_coefs(split.set$previousLetter, name = "previousLetter")
 
-rm(coefs, coefs_ext, split.set, toselect)
+rm(coefs, coefs_ext)
 
 summary(best.model)
 crossvalidate(best.model, d_letters.test)
@@ -191,6 +181,66 @@ anova(best.model, model.int, test = "Chisq") #it's not better
 
 #clean up
 rm(best.model, coefs, coefs_ext, d_letters, d_letters.test, d_letters.train, full.model, model.int, split.set, formula, toselect)
+
+#Junctions and letterforms ====
+#load data
+d_forms <- data.loadData(whichColumns = c("code","junc_border"), 
+                         removeWaZ = T, removeWordEnds = T, removeUpperCase = T, removeUnrecognisable = T)
+
+#set up test and training samples
+d_forms.split <- split_set(d_forms)
+d_forms.train <- d_forms.split$train.data
+d_forms.test <- d_forms.split$test.data
+rm(d_forms.split)
+
+#set up model
+formula <- formula(junc_border ~ code)
+full.model <- glm(formula, data = d_forms.train, family = binomial())
+best.model <- full.model %>% stepAIC(direction = "both")
+
+#check for outliers
+outliers <- checkOutliers(best.model)
+
+#remove outliers and set up a new model
+if(!is_empty(outliers))
+{
+  print("Outliers detected; omitting overly influential cases and setting up new model")
+  d_forms.train <- d_forms.train[-outliers, ]
+  full.model <- glm(formula = formula, data = d_forms.train, family = binomial)
+  best.model <- full.model %>% MASS::stepAIC(direction = "both")
+}
+rm(outliers)
+
+#there are no numeric variables in the model, so no assumptions can be checked
+
+#calculate coefficients
+coefs <- getCoefs(best.model, varName = "code", fileName = "letterforms")
+
+#prepare coefs for plotting
+coefs_ext <- arrange(coefs, desc(coefs))
+coefs_ext$rownames.coefs. <- str_remove_all(coefs_ext$rownames.coefs.,"code")
+coefs_ext <- mutate(coefs_ext, name = rownames.coefs.)
+coefs_ext <- mutate(coefs_ext, pos = ifelse(coefs > 0, coefs + 1.5, coefs - 1.5))
+coefs_ext <- arrange(coefs_ext, coefs)
+coefs_ext$rownames.coefs. <- NULL
+max_coefs <- head(arrange(coefs_ext, desc(coefs)),15)
+min_coefs <- tail(arrange(coefs_ext, desc(coefs)),15)
+coefs_ext <- rbind(max_coefs, min_coefs)
+names(coefs_ext)[2] <- "rownames.coefs."
+
+#clean up
+rm(max_coefs, min_coefs)
+
+#plot
+plot_coefs(coefs_ext, name = "letterforms")
+
+#evaluate model
+summary(best.model)
+crossvalidate(best.model, d_forms.test)
+descr::LogRegR2(best.model)
+
+#clean up
+rm(best.model, coefs, coefs_ext, d_forms, d_forms.test, d_forms.train, full.model, formula)
 
 #Junctions and bigrams ====
 #load data
@@ -229,17 +279,7 @@ rm(outliers)
 #there are no numeric variables in the model, so no assumptions can be checked
 
 #calculate coefficients and save them to a data frame
-coefs <- round(best.model$coefficients,2)
-coefs <- data.frame(coefs)
-coefs <- cbind(rownames(coefs), data.frame(coefs, row.names=NULL))
-coefs$`rownames(coefs)` <- str_replace_all(coefs$`rownames(coefs)`, "bigramm_next", "")
-
-#select significant variables
-toselect <- summary(best.model)$coeff[-1,4] < 0.05
-coefs <- coefs[toselect == TRUE,]
-coefs <- na.omit(coefs)
-#save to a .csv
-write.csv2(coefs, "results/coefs_junctionBigrams.csv")
+coefs <- getCoefs(best.model, varName = "bigramm_next", fileName = "bigrams")
 
 #plot the fifteen highest and lowest coefs
 max_coefs <- head(arrange(coefs, desc(coefs)),20)
@@ -255,4 +295,4 @@ crossvalidate(best.model, d_bigr.test)
 descr::LogRegR2(best.model)
 
 #clean up
-rm(coefs_ext, d_bigr, d_bigr.test, d_bigr.train, full.model, max_coefs, min_coefs, best.model, coefs, formula, toselect)
+rm(coefs_ext, d_bigr, d_bigr.test, d_bigr.train, full.model, max_coefs, min_coefs, best.model, coefs, formula)

@@ -106,4 +106,21 @@ paraModel <- function(character, data)
   result <- c(character, mean(predicted.classes == test.data$code))
   return(result)
 }
+
+#function to extract coefficients from a model
+getCoefs <- function(model, varName, fileName)
+{
+  coefs <- round(model$coefficients,3)
+  coefs <- data.frame(coefs)
+  coefs <- cbind(rownames(coefs), data.frame(coefs, row.names=NULL))
+  coefs$`rownames(coefs)` <- str_replace_all(coefs$`rownames(coefs)`, varName, "")
+ 
+  #select significant variables
+  toselect <- summary(model)$coeff[-1,4] < 0.05
+  coefs <- coefs[toselect == TRUE,]
+  coefs <- data.frame(na.omit(coefs))
+  #save coefficients to .csv
+  write.csv2(coefs, paste0("results/coefficients_", fileName, ".csv"))
+  return(coefs)
+}
  
