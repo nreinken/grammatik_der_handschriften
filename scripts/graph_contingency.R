@@ -19,7 +19,8 @@ letters <- append(letters, "ß")
 
 #Form and function of <e> ====
 #load data
-d_e <- data.loadData(whichColumns = c("code", "e_func"), letter = "e", removeUpperCase = T, removeUnrecognisable = T, removeWaZ = F, removeWordEnds = F)
+d_e <- data.loadData(whichColumns = c("code", "e_func"), letter = "e", 
+                     removeUpperCase = T, removeUnrecognisable = T, removeWaZ = F, removeWordEnds = F)
 
 #remove Umlaut-e and etymological e because they are to rare
 d_e <- droplevels(filter(d_e, !e_func %in% c("UML", "ETYM")))
@@ -37,10 +38,12 @@ rm(d_e)
 #Distinctivity at syllable positions ====
 
 #load data
-d_dist <- data.loadData(whichColumns = c("letter_rec", "code", "gsyll_struc"), removeWaZ = F, removeUpperCase = T, removeUnrecognisable = T)
+d_dist <- data.loadData(whichColumns = c("letter_rec", "code", "gsyll_struc"), 
+                        removeWaZ = F, removeUpperCase = T, removeUnrecognisable = T)
 
 #reorder the factor levels of gsyll_struc
-d_dist$gsyll_struc <- factor(d_dist$gsyll_struc, levels = c("ONS", "NUC", "KEY", "CODA", "EXTRA"))
+d_dist$gsyll_struc <- factor(d_dist$gsyll_struc, 
+                             levels = c("ONS", "NUC", "KEY", "CODA", "EXTRA"))
 
 #  test single letters ====
 test_letters <- c("e")
@@ -109,7 +112,8 @@ rm(d_dist, d_dist_temp, d_dist_temp2, letter_pairs, form, letter, letter_recs, p
 
 #Double Consonants
 #load data
-d_dbl <- data.loadData(whichColumns = c("letter_rec", "code", "double_cons", "double_index"), removeWaZ = F, removeWordEnds = F, removeUpperCase = T, removeUnrecognisable = T)
+d_dbl <- data.loadData(whichColumns = c("letter_rec", "code", "double_cons", "double_index"), 
+                       removeWaZ = F, removeWordEnds = F, removeUpperCase = T, removeUnrecognisable = T)
 
 #filter cases with no double consonants
 d_dbl <- filter(d_dbl, !is.na(double_cons))
@@ -127,7 +131,8 @@ for(double_consonant in double_consonants)
   d_dbl_diffs <- droplevels(select(d_dbl_diffs, code, double_index))
   d_dbl_diffs$double_index <- as.factor(d_dbl_diffs$double_index)
   table(d_dbl_diffs)
-  cont_test(d_dbl_diffs, x.title = paste0("double_cons_position",double_consonant), y.title = "form")
+  cont_test(d_dbl_diffs, 
+            x.title = paste0("double_cons_position",double_consonant), y.title = "form")
 }
 
 #check if the double consonant parts have the same shape
@@ -483,16 +488,11 @@ for(letter in letters)
   #run analysis
   print(table(d_morph_single))
   cont_test(d_morph_single, x.title ="morphographic", y.title =paste0(letter, "_form"))
+}
 
-  #contrast reduced forms against all other forms
-  #TODO
-  }
-
-<<<<<<< HEAD
 #clean up
 rm(letter, d_morph_single, d_morph)
-=======
->>>>>>> eff441975f3d6d267204901e5251f634325260bc
+
 
 #Form and function of <h> ====
 #load data
