@@ -1,6 +1,6 @@
 #graph_contingency.R
 #analysis of graphical letter forms and their correlations with grammatical structures
-#based on scripts by Niklas Reinken, July 2021
+#based on scripts by Niklas Reinken, July 2021 – October 2022
 #version 2, January 2023
 
 if(!require(tidyverse)){install.packages("tidyverse")}
@@ -218,6 +218,46 @@ for(letter in letters)
 
 #clean up
 rm(d_key, d_key_single, letter)
+
+#Case study: Lettershapes and voicedness for each text ====
+#load data
+d_text <- data.loadData(whichColumns = c("person_ID", "letter_rec", "code", "phon_cvoiced"),
+                        letter = c("b", "d", "g", "s"),
+                        removeWaZ = F, removeWordEnds = F, removeUpperCase = T, removeUnrecognisable = T)
+
+d_text$person_ID <- as.factor(d_text$person_ID)
+d_text <- droplevels(filter(d_text, phon_cvoiced != "n.V."))
+
+#group data by texts
+d_text <- group_by(d_text, person_ID) %>% group_split()
+
+#run contingency analysis for each text
+for(text in d_text)
+{
+  text <- droplevels(text)
+  print(paste0("Text ",as.character(text$person_ID[1])))
+ 
+  voiced_letters <- c("b", "d", "g", "s")
+  for (letter in voiced_letters)
+  {
+    d_subset <- droplevels(filter(text, letter_rec == letter))
+    d_subset$letter_rec <- NULL
+    d_subset$person_ID <- NULL
+    print(paste0("Letter ", letter))
+    if(nlevels(d_subset$code) <= 1 || nlevels(d_subset$phon_cvoiced) <= 1)
+    {
+      print("No occurence of letter, only one letter form or no change in voicedness; skipping letter.")
+    }
+    else
+    {
+      #run contingency tests
+      print(table(d_subset))
+      cont_test(d_subset, x.title = "voice", y.title = paste0(text$person_ID[1], "_", letter))
+    }
+  }
+}
+#clean up
+rm(d_subset, d_text, text, letter, voiced_letters)
 
 #<h> shape and junctions ####
 #load data
