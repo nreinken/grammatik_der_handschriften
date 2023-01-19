@@ -17,6 +17,7 @@ options(scipen = 999)
 #add <ß> to global letters array
 letters <- append(letters, "ß")
 
+
 #Form and function of <e> ====
 #load data
 d_e <- data.loadData(whichColumns = c("code", "e_func"), letter = "e", 
@@ -219,7 +220,55 @@ for(letter in letters)
 #clean up
 rm(d_key, d_key_single, letter)
 
-#Case study: Lettershapes and voicedness for each text ====
+#Phonographic structures ====
+#   lettershape and vowel tension ====
+#load data
+d_vowels <- data.loadData(whichColumns = c("code", "phon_class", "phon_vtension", "letter_rec"), letter = vowels,
+                          removeWaZ = F, removeWordEnds = F, removeUpperCase = T, removeUnrecognisable = T)
+
+#keep only full vowels
+d_vowels <- droplevels(filter(d_vowels, phon_class == "VFULL"))
+d_vowels$phon_class <- NULL
+
+#run contingency test for each vowel
+for(letter in vowels)
+{
+  print(paste0("Letter: ", letter))
+ 
+  #select only one letter
+  d_singleVowel <- droplevels(filter(d_vowels, letter_rec == letter))
+  d_singleVowel$letter_rec <- NULL
+  
+  #run contingency tests
+  cont_test(d_singleVowel, x.title = "tension", y.title = paste0("form_", letter))
+}
+#clean up
+rm(d_singleVowel, d_vowels, letter, vowels)
+
+#   lettershape and consonant voicedness ====
+consonants <- c("b", "d", "g", "s", "v")
+d_cons <- data.loadData(whichColumns = c("code", "phon_class", "phon_cvoiced", "letter_rec"), letter = consonants,
+                          removeWaZ = F, removeWordEnds = F, removeUpperCase = T, removeUnrecognisable = T)
+
+#keep only full vowels
+d_cons <- droplevels(filter(d_cons, phon_class == "CONS"))
+d_cons$phon_class <- NULL
+
+#run contingency test for each vowel
+for(letter in consonants)
+{
+  print(paste0("Letter: ", letter))
+  
+  #select only one letter
+  d_singleCons <- droplevels(filter(d_cons, letter_rec == letter))
+  d_singleCons$letter_rec <- NULL
+  
+  #run contingency tests
+  cont_test(d_singleCons, x.title = "voicedness", y.title = paste0("form_", letter))
+}
+#clean up
+rm(d_singleCons, letter, consonants, d_cons)
+#   Case study: Lettershapes and voicedness for each text ====
 #load data
 d_text <- data.loadData(whichColumns = c("person_ID", "letter_rec", "code", "phon_cvoiced"),
                         letter = c("b", "d", "g", "s"),
