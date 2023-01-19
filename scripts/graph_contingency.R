@@ -633,6 +633,55 @@ for(letter in letters)
 rm(letter, d_morph_single, d_morph)
 
 
+#Morpheme borders ====
+#load data
+d_morph_border <- data.loadData(whichColumns = c("junc_border", "morph_border"), 
+                         removeWaZ = T, removeWordEnds = T, removeUpperCase = F, removeUnrecognisable = F)
+
+#run contingency tests
+cont_test(d_morph_border, x.title = "morphemeBorder", y.title = "junction")
+rm(d_morph_border)
+
+#Morpheme processes ====
+#load data
+d_morph_type <- data.loadData(whichColumns = c("junc_border", "morph_border_type"), 
+                                removeWaZ = T, removeWordEnds = T, removeUpperCase = F, removeUnrecognisable = F)
+#refactor the morphological processes
+newValues <- c("LEX-FLEX" = "inflection",
+               "LEX-SFX" = "suff.",
+               "LEX-LEX" = "comp.", 
+               "PFX-LEX" = "pref.",
+               "SFX-FLEX" = "inflection",
+               "FLEX-FLEX" = "inflection",
+               "FLEX-LEX" = "inflection",
+               "FLEX-SFX" = "suff.",
+               "FUG-FLEX" = "inflection",
+               "FUG-LEX" = "comp.",
+               "FUG-PFX" = "comp.",
+               "FUG-SFX" = "suff.",
+               "LEX-FUG" = "comp.",
+               "LEX-PFX" = "comp.",
+               "LEX-ZFX" = "circumf.",
+               "PFX-FLEX" = "pref.",
+               "PFX-PFX" = "pref.",
+               "PFX-SFX" = "comp.",
+               "SFX-FUG" = "comp.",
+               "SFX-LEX" = "comp.",
+               "SFX-PFX" = "comp.",
+               "SFX-SFX" = "suff.",
+               "ZFX-LEX" = "circumf.",
+               "n.V." = "none")
+d_morph_type$morph_border_type <- plyr::revalue(d_morph_type$morph_border_type, newValues)
+d_morph_type$morph_border_type <- factor(d_morph_type$morph_border_type, levels=c('none', 'inflection', 'pref.', 'suff.', 'comp.', 'circumf.'))
+rm(newValues)
+
+#remove circumfixation, cause it's too rare
+d_morph_type <- droplevels(filter(d_morph_type, !morph_border_type == "circumf."))
+
+#run contingency test
+cont_test(d_morph_type, x.title = "morphemeProcess", y.title = "junction")
+rm(d_morph_type)
+
 #Form and function of <h> ====
 #load data
 d_h <- data.loadData(whichColumns = c("code", "h_func"), letter = "h", removeUpperCase = T, removeUnrecognisable = T, removeWaZ = F, removeWordEnds = F)
