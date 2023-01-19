@@ -464,6 +464,56 @@ rm(letter)
 rm(newValues)
 rm(test_letters)
 
+#lettershape in syllable positions ====
+#  test single letters ====
+#load data
+d_syll <- data.loadData(whichColumns = c("letter_rec", "code", "gsyll_struc"),
+                        removeWaZ = F, removeWordEnds = F, removeUpperCase = T, removeUnrecognisable = T)
+#sort factor levels
+d_syll$gsyll_struc <- factor(d_syll$gsyll_struc, c("ONS", "NUC", "KEY", "CODA", "EXTRA"))
+
+#run contingency test for each letter
+for (letter in letters)
+{
+  print(paste0("Letter ", letter))
+  d_subs <- droplevels(filter(d_syll, letter_rec == letter))
+  d_subs$letter_rec <- NULL
+  
+  #run tests
+  print(table(d_subs))
+  cont_test(d_subs, x.title = "syllablePosition", y.title = paste0(letter, "-shape"))
+}
+#clean up
+rm(d_subs, d_syll)
+#  test reduced letters against other shapes =====
+#define reduced forms
+reduced_forms <- c("a5", "e3", "f6", "f7", "f8", "f9", "g5", "g6", "h5", "g6", "k8", "o3", "r4", "r5", "s5", "t5")
+reduced_letters <- unique(str_sub(reduced_forms, start = 1, end = 1))
+
+for(letter in reduced_letters)
+{
+  print(paste0("letter: ", letter))
+  #get reduced forms belonging to this letter
+  forms <- str_subset(reduced_forms, letter)
+  
+  
+  #load data
+  d_reds <- data.loadData(whichColumns = c("code", "gsyll_struc"), letter = letter, 
+                          removeWaZ = F, removeWordEnds = F, removeUpperCase = T, removeUnrecognisable = T)
+ 
+ #sort factor levels
+ d_reds$gsyll_struc <- factor(d_reds$gsyll_struc, c("ONS", "NUC", "KEY", "CODA", "EXTRA"))
+ d_reds <- droplevels(d_reds) 
+ 
+ #contrast reduced against not reduced forms
+  d_reds$code <- as.factor(ifelse(d_reds$code %in% forms, "reduced", "not reduced"))
+  
+  #run contingency tests
+  print(table(d_reds))
+  cont_test(d_reds, x.title = "syllablePosition", y.title = paste0("reduced_", letter))
+}
+rm(forms, letter, reduced_forms, reduced_letters, d_reds)
+
 #Graphematic feet ====
 #  Check if e form depends on syllable type ====
 d_esyll <- data.loadData(whichColumns = c("code", "gsyll_type"), letter = "e", removeWaZ = F, removeWordEnds = F, removeUpperCase = T, removeUnrecognisable = T)
