@@ -564,7 +564,7 @@ for(letter in reduced_letters)
 rm(forms, letter, reduced_forms, reduced_letters, d_reds)
 
 #Graphematic feet ====
-#  Check if e form depends on syllable type ====
+#  Check if <e> form depends on syllable type ====
 d_esyll <- data.loadData(whichColumns = c("code", "gsyll_type"), letter = "e", removeWaZ = F, removeWordEnds = F, removeUpperCase = T, removeUnrecognisable = T)
 
 #get frequency table and run contingency tests
@@ -611,6 +611,21 @@ cont_test(d_gfoot_onlyTro, x.title = "Onlytro_gfootBorder", y.title = "junction"
 #clean up
 rm(d_gfoot, d_gfoot_dac, d_gfoot_tro, d_gfoot_onlyTro)
 
+#Reduced <e> at morphological positions
+#load data
+eRed_morph <- data.loadData(whichColumns = c("gsyll_type", "code", "morph_cat"), letter="e", removeWaZ = F, removeWordEnds = F, removeUpperCase = T, removeUnrecognisable = T)
+
+#only use cases with the <e> in inflexion affixes and in lexemes and reduced syllables
+eRed_morph <- filter(eRed_morph, gsyll_type == "RED")
+eRed_morph$gsyll_type <- NULL
+eRed_morph <- droplevels(filter(eRed_morph, morph_cat %in% c("FLEX", "LEX")))
+
+#rename factor levels
+eRed_morph$morph_cat <- plyr::revalue(eRed_morph$morph_cat, c("LEX"= "pseudo affix / morphological remnant", "FLEX" = "inflexion affix" ))
+
+#run contingency test
+cont_test(eRed_morph, x.title = "e_reducedSyll", y.title ="morphemeCategory")
+
 #Lettershapes at morphological positions ====
 #load data
 d_morph <- data.loadData(whichColumns = c("letter_rec", "code", "morphographic"), removeWaZ =  F, removeWordEnds = F, removeUpperCase = T, removeUnrecognisable = T)
@@ -625,7 +640,6 @@ for(letter in letters)
   print(letter)
   
   #run analysis
-  print(table(d_morph_single))
   cont_test(d_morph_single, x.title ="morphographic", y.title =paste0(letter, "_form"))
 }
 
