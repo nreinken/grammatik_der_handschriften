@@ -3,9 +3,9 @@
 #based on scripts by Niklas Reinken, July 2021
 #version 1, January 2023
 
-if(!require(tidyverse)){install.packages("tidyverse")}
+
 if(!require(plyr)){install.packages("plyr")}
-if(!require(MASS)){install.packages("MASS")}
+if(!require(tidyverse)){install.packages("tidyverse")}
 if(!require(descr)){install.packages("descr")}
 library(tidyverse)
 
@@ -130,7 +130,7 @@ rm(d_letters.split)
 #set up model
 formula <- formula(junc_border ~ next_letter + prev_letter)
 full.model <- glm(formula, data = d_letters.train, family = binomial())
-best.model <- full.model %>% stepAIC(direction = "both")
+best.model <- full.model %>% MASS::stepAIC(direction = "both")
 
 #check for outliers
 outliers <- checkOutliers(best.model)
