@@ -8,12 +8,14 @@ source("scripts/pval.R")
 source("scripts/graphics.R")
 
 #load required packages
-if (!require(vcd)) {
+if (!requireNamespace("vcd", quietly = TRUE)) {
   install.packages("vcd")
 }
-if (!require(chisq.posthoc.test)) {
+library(vcd)
+if (!requireNamespace("chisq.posthoc.test", quietly = TRUE)) {
   install.packages("chisq.posthoc.test")
 }
+library(chisq.posthoc.test)
 
 #contingency test function
 cont_test <-

@@ -3,7 +3,10 @@
 #based on scripts by Niklas Reinken, July 2021
 #version 1, December 2022
 
-if(!require(tidyverse)){install.packages("tidyverse")}
+#load required packages
+if (!requireNamespace("tidyverse", quietly = TRUE)) {
+  install.packages("tidyverse")
+}
 library(tidyverse)
 
 pval <- function (pvalue, title)

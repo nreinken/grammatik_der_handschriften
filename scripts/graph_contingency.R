@@ -3,8 +3,13 @@
 #based on scripts by Niklas Reinken, July 2021 – October 2022
 #version 3, March 2023
 
-if(!require(tidyverse)){install.packages("tidyverse")}
-if(!require(plyr)){install.packages("plyr")}
+if (!requireNamespace("plyr", quietly = TRUE)) {
+  install.packages("plyr")
+}
+library(plyr)
+if (!requireNamespace("tidyverse", quietly = TRUE)) {
+  install.packages("tidyverse")
+}
 library(tidyverse)
 
 source("scripts/dataHandling.R")
@@ -158,7 +163,7 @@ for(level in levels(d_dbl$double_cons))
 }
 
 #clean up
-rm(double_consonants, level, d_dbl, d_dbl_diffs)
+rm(double_consonant, level, d_dbl, d_dbl_diffs)
 
 
 #lettershapes in diphthongs ====
@@ -186,7 +191,7 @@ for (letter in secondParts)
   cont_test(d_diph_single, x.title = "diphthong", y.title = paste0(letter, "_form"))
 }
 #clean up
-rm(letter, seconParts, d_diph, d_diph_single)
+rm(letter, secondParts, d_diph, d_diph_single)
 
 #lettershapes in key position ====
 #load data

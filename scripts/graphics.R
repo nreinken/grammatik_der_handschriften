@@ -3,7 +3,9 @@
 #based on scripts by Niklas Reinken, July 2021
 #version 1, December 2022
 
-if(!require(tidyverse)){install.packages("tidyverse")}
+if (!requireNamespace("tidyverse", quietly = TRUE)) {
+  install.packages("tidyverse")
+}
 library(tidyverse)
 
 plot_assoc <- function(test, x.title = "", y.title ="", eps = T, png = T)

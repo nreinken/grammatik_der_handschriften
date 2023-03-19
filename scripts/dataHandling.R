@@ -3,9 +3,14 @@
 #based on scripts by Niklas Reinken, July 2021
 #version 1, December 2022
 
-if(!require(tidyverse)){install.packages("tidyverse")}
-if(!require(janitor)){install.packages("janitor")}
+if (!requireNamespace("tidyverse", quietly = TRUE)) {
+  install.packages("tidyverse")
+}
 library(tidyverse)
+if (!requireNamespace("janitor", quietly = TRUE)) {
+  install.packages("janitor")
+}
+library(janitor)
 
 data.loadData <- function(whichColumns = "", letter = NULL, removeWaZ = T, removeWordEnds = F, removeUpperCase = F, removeUnrecognisable = F)
 {
