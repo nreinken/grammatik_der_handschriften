@@ -8,7 +8,16 @@ library(tidyverse)
 
 pval <- function (pvalue, title)
 {
-  #create tibble for p-values in the global environment, if it doesn't exist
+ 
+  # validate input arguments
+  if (!is.numeric(pvalue)) {
+    stop("pvalue must be numeric")
+  }
+  if (is.na(title) || title == "") {
+    stop("title must be a non-empty string")
+  }
+  
+   #create tibble for p-values in the global environment, if it doesn't exist
   if(!exists("pvals"))
   {
     assign("pvals", dplyr::tibble(id = "", pvalue = 0), envir = globalenv())
@@ -28,7 +37,7 @@ pval <- function (pvalue, title)
   assign("pvals", pvals.loc, envir = globalenv())
  
   #write pvals to csv.file 
-  write.csv(pvals.loc, "results/pvalues.csv", row.names = FALSE)
+  readr::write_csv(pvals, "results/pvalues.csv")
   
   # return adjusted p-value
   case <- filter(pvals, id == title)
