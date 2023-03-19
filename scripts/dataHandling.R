@@ -12,20 +12,58 @@ if (!requireNamespace("janitor", quietly = TRUE)) {
 }
 library(janitor)
 
-data.loadData <- function(whichColumns = "", letter = NULL, removeWaZ = T, removeWordEnds = F, removeUpperCase = F, removeUnrecognisable = F)
+data.loadData <- function(whichColumns = NULL, letter = NULL, removeWaZ = T, removeWordEnds = F, removeUpperCase = F, removeUnrecognisable = F)
 {
  
   #determine the columns to be loaded
-  whichColumns_intern <- append(whichColumns, c("letter_rec", "WaZ", "word_struc", "code"))
-  whichColumns_intern <- unique(whichColumns_intern)
+  if (is.null(whichColumns)) {
+    whichColumns_intern <- c("letter_rec", "WaZ", "word_struc", "code")
+  } else {
+    whichColumns_intern <- append(whichColumns, c("letter_rec", "WaZ", "word_struc", "code"))
+  }
+  whichColumns_intern <- unique(whichColumns_intern[whichColumns_intern != ""])
   
-  d <- readr::read_csv2("Graphen_MAIN.csv", col_select = all_of(whichColumns_intern))
-  d <- janitor::remove_empty(d, which = c("rows", "cols"))
   
-  #keep only needed letters
-  if(!is.null(letter))
-  {
-    d <- filter(d, letter_rec %in% letter)
+  # read in the desired columns only
+  col_types <- cols_only(
+    !!!setNames(rep(list(col_character()), length(whichColumns_intern)), whichColumns_intern)
+  )
+  d <- suppressMessages(readr::read_csv2("Graphen_MAIN.csv", col_types = col_types, col_select = all_of(whichColumns_intern), show_col_types = FALSE))
+  
+  # keep only needed letters
+  if (!is.null(letter)) {
+    d <- d %>% filter(letter_rec %in% letter)
+  }
+  
+
+    # remove line break separations
+  if (removeWaZ) {
+    d <- d %>% filter(WaZ != T)
+  }
+  
+  # remove word ends
+  if (removeWordEnds) {
+    d <- d %>% filter(word_struc != "fin")
+  }
+  
+  # remove upper case
+  if (removeUpperCase) {
+    d <- d %>% filter(letter_rec != "0")
+  }
+  
+  # remove unrecognisable letters
+  if (removeUnrecognisable) {
+    d <- d %>% filter(!grepl("99", code))
+  }
+
+  
+  # select desired columns
+  if (!is.null(whichColumns)) {
+    # check if all column names in whichColumns exist in the data
+    if (any(!whichColumns %in% colnames(d))) {
+      stop("Column name(s) not found in data: ", paste(setdiff(whichColumns, colnames(d)), collapse = ", "))
+    }
+    d <- d %>% select(any_of(whichColumns))
   }
   
   #convert to factors and integers
@@ -33,43 +71,5 @@ data.loadData <- function(whichColumns = "", letter = NULL, removeWaZ = T, remov
   d <- d %>% mutate_if(is.logical,as.factor)
   d <- d %>% mutate_if(is.double,as.integer)
   
-
-  #remove line break separations
-  if(removeWaZ)
-  {
-    d <- filter(d, WaZ != T)
-  }
-  d$WaZ <- NULL
-  
-  
-  #remove word ends
-  if(removeWordEnds)
-  {
-    d <- filter(d, word_struc != "fin")
-  }
-  d$word_struc <- NULL
-  
-  #remove upper case
-  if(removeUpperCase)
-  {
-    d <- filter(d, letter_rec != "0")
-  }
-  
-  #remove unrecognisable letters
-  if(removeUnrecognisable)
-  {
-    d <- filter(d, !str_detect(code, "99"))
-  }
-
-  
-  #select desired columns
-  if(length(whichColumns) > 0)
-  {
-    d <- dplyr::select(d, any_of(whichColumns))
-  }
- 
-  d <- droplevels(d)
-  
-  print(glimpse(d, n = 10))
-  return(d)
+  return(droplevels(d))
 }

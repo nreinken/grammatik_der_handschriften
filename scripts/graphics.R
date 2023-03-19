@@ -1,4 +1,4 @@
-#contingencyTests.R
+#graphics.R
 #functions for graphical output and diagrams
 #based on scripts by Niklas Reinken, July 2021
 #version 1, December 2022
