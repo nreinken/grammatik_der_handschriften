@@ -25,10 +25,7 @@ data.loadData <- function(whichColumns = NULL, letter = NULL, removeWaZ = T, rem
   
   
   # read in the desired columns only
-  col_types <- cols_only(
-    !!!setNames(rep(list(col_character()), length(whichColumns_intern)), whichColumns_intern)
-  )
-  d <- suppressMessages(readr::read_csv2("Graphen_MAIN.csv", col_types = col_types, col_select = all_of(whichColumns_intern), show_col_types = FALSE))
+  d <- suppressMessages(readr::read_csv2("Graphen_MAIN.csv", col_select = all_of(whichColumns_intern), show_col_types = FALSE))
   
   # keep only needed letters
   if (!is.null(letter)) {
@@ -63,7 +60,7 @@ data.loadData <- function(whichColumns = NULL, letter = NULL, removeWaZ = T, rem
     if (any(!whichColumns %in% colnames(d))) {
       stop("Column name(s) not found in data: ", paste(setdiff(whichColumns, colnames(d)), collapse = ", "))
     }
-    d <- d %>% select(any_of(whichColumns))
+    d <- d %>% select(dplyr::any_of(whichColumns))
   }
   
   #convert to factors and integers

@@ -20,8 +20,8 @@ library(chisq.posthoc.test)
 #contingency test function
 cont_test <-
   function(data,
-           x.title = "",
-           y.title = "",
+           x_title = "",
+           y_title = "",
            alpha = 0.05)
   {
     
@@ -38,7 +38,7 @@ cont_test <-
     }
     
     #create plot title and pval ID
-    title = paste0(x.title, "X", y.title)
+    title = paste0(x_title, "X", y_title)
     
     #print the frequency table
     t <- table(data)
@@ -84,7 +84,7 @@ cont_test <-
       print(chisq.posthoc.test::chisq.posthoc.test(t))
       
       #create graphical output
-      suppressWarnings(plot_assoc(chisq.test(t), x.title = x.title, y.title = y.title))
+      suppressWarnings(plot_assoc(chisq.test(t), x_title = x_title, y_title = y_title))
     }
     
     #return contingency table and test results
