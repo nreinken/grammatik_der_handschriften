@@ -16,7 +16,8 @@ options(scipen = 999)
 
 #add <ß> to global letters array
 letters <- append(letters, "ß")
-
+#create array with vowels
+vowels <- c("a", "e", "i", "o", "u")
 
 #Form and function of <e> ====
 #load data
@@ -30,7 +31,6 @@ d_e <- droplevels(filter(d_e, !e_func %in% c("UML", "ETYM")))
 d_e$e_func <- factor(d_e$e_func, c("FULL", "DIPHTHONG", "LENGTH", "RED"))
 
 #get frequency table and contingency test
-table(d_e)
 cont_test(d_e, x.title = "efunc", y.title = "eform")
 
 #clean up
@@ -55,7 +55,6 @@ for (letter in test_letters)
   d_dist_temp$letter_rec = NULL
   d_dist_temp <- droplevels(d_dist_temp)
   #get table and contingency tests
-  (table(d_dist_temp))
   cont_test(d_dist_temp, x.title = paste0("gsyll_",letter), y.title = "form")
 }
 #clean up
@@ -102,7 +101,6 @@ for (pair in letter_pairs)
     d_dist_temp2 <- droplevels(d_dist_temp2)
     
     #get table and contingency tests
-    (table(d_dist_temp2))
     cont_test(d_dist_temp2, x.title = paste0("gsyll_",form), y.title = "form")
   }
 }
@@ -131,7 +129,6 @@ for(double_consonant in double_consonants)
   d_dbl_diffs <- filter(d_dbl, double_cons == double_consonant)
   d_dbl_diffs <- droplevels(select(d_dbl_diffs, code, double_index))
   d_dbl_diffs$double_index <- as.factor(d_dbl_diffs$double_index)
-  table(d_dbl_diffs)
   cont_test(d_dbl_diffs, 
             x.title = paste0("double_cons_position",double_consonant), y.title = "form")
 }
@@ -186,7 +183,6 @@ for (letter in secondParts)
   d_diph_single$letter_rec <- NULL
   
   #run contingency tests
-  print(table(d_diph_single))
   cont_test(d_diph_single, x.title = "diphthong", y.title = paste0(letter, "_form"))
 }
 #clean up
@@ -213,7 +209,6 @@ for(letter in letters)
   d_key_single$letter_rec <- NULL
   
   #run contingency test
-  print(table(d_key_single))
   cont_test(d_key_single, x.title ="key", y.title=paste0(letter, "_form"))
 }
 
@@ -300,7 +295,6 @@ for(text in d_text)
     else
     {
       #run contingency tests
-      print(table(d_subset))
       cont_test(d_subset, x.title = "voice", y.title = paste0(text$person_ID[1], "_", letter))
     }
   }
@@ -323,10 +317,8 @@ d_h$junc_border_before <- NULL
 d_h <- droplevels(d_h)
 
 #get frequency tables and run contingency tests
-table(d_h)
 cont_test(data = d_h, x.title = "junction", y.title = "h_shape")
 
-table(d_h_before)
 cont_test(data = d_h_before, x.title = "junction_before", y.title = "h_shape")
 
 #clean up
@@ -381,7 +373,6 @@ d_complex_binary$graph_complexity <- plyr::revalue(d_complex_binary$graph_comple
 d_complex_binary <- droplevels(d_complex_binary)
 
 #get frequency table and run contingency test
-table(d_complex_binary)
 cont_test(data = d_complex_binary, x.title = "complex", y.title = "junction")
 
 #clean up
@@ -392,7 +383,6 @@ d_complex_th <- filter(d_complex_pseudo, graph_complexity %in% c("th", "pseudo-t
 d_complex_th <- droplevels(d_complex_th)
 
 #get frequency table and run contingency test
-table(d_complex_th)
 cont_test(d_complex_th, x.title = "complex_th", y.title = "junction")
 
 #clean up
@@ -412,7 +402,6 @@ d_complex_single <- filter(d_complex_single, !graph_complexity == "FALSE")
 d_complex_single <- droplevels(d_complex_single)
 
 #get frequency table and run contingency test
-table(d_complex_single)
 cont_test(data = d_complex_single, x.title = "complex_onlyComplex", y.title = "junction")
 
 #clean up
@@ -427,7 +416,6 @@ d_complex_sch$graph_complexity_both <- NULL
 d_complex_sch <- droplevels(d_complex_sch)
 
 #get frequency table and run contingency test
-table(d_complex_sch)
 cont_test(d_complex_sch, x.title = "complex_sch", y.title = "junction")
 
 #clean up
@@ -442,7 +430,6 @@ d_complex_sc$graph_complexity_both <- NULL
 d_complex_sc <- droplevels(d_complex_sc)
 
 #get frequency table and run contingency test
-table(d_complex_sc)
 cont_test(d_complex_sc, x.title = "complex_sc", y.title = "junction")
 
 #clean up
@@ -455,7 +442,6 @@ d_complex_ng$graph_complexity <- ifelse(d_complex_ng$graph_complexity == "FALSE"
 d_complex_ng$graph_complexity <- factor(d_complex_ng$graph_complexity)
 
 #get frequency table and run contingency test
-table(d_complex_ng)
 cont_test(d_complex_ng, x.title = "complex_ng", y.title = "junction")
 
 #clean up
@@ -468,7 +454,6 @@ d_complex_el$graph_complexity <- factor(d_complex_el$graph_complexity)
 
 
 #get frequency table and run contingency test
-table(d_complex_el)
 cont_test(d_complex_el, x.title = "complex_el", y.title = "junction")
 
 #clean up
@@ -499,7 +484,6 @@ for(letter in test_letters)
   d_complex_letter$letter_rec <- NULL
   d_complex_letter <- droplevels(d_complex_letter)
   
-  print(table(d_complex_letter))
   cont_test(d_complex_letter, x.title = paste0(letter,"-form"), y.title = "complex")
 }
 
@@ -546,7 +530,6 @@ for (letter in letters)
   d_subs$letter_rec <- NULL
   
   #run tests
-  print(table(d_subs))
   cont_test(d_subs, x.title = "syllablePosition", y.title = paste0(letter, "-shape"))
 }
 #clean up
@@ -575,7 +558,6 @@ for(letter in reduced_letters)
   d_reds$code <- as.factor(ifelse(d_reds$code %in% forms, "reduced", "not reduced"))
   
   #run contingency tests
-  print(table(d_reds))
   cont_test(d_reds, x.title = "syllablePosition", y.title = paste0("reduced_", letter))
 }
 rm(forms, letter, reduced_forms, reduced_letters, d_reds)
@@ -585,8 +567,6 @@ rm(forms, letter, reduced_forms, reduced_letters, d_reds)
 d_esyll <- data.loadData(whichColumns = c("code", "gsyll_type"), letter = "e", removeWaZ = F, removeWordEnds = F, removeUpperCase = T, removeUnrecognisable = T)
 
 #get frequency table and run contingency tests
-#get frequency table and run contingency tests
-table(d_esyll)
 cont_test(d_esyll, x.title = "eForm", y.title = "syllableType")
 
 #clean up
@@ -602,7 +582,6 @@ d_gfoot_dac$gfoot <- NULL
 d_gfoot_dac <- droplevels(d_gfoot_dac)
 
 #get frequency table and run contingency tests
-table(d_gfoot_dac)
 cont_test(d_gfoot_dac, x.title = "dak_gfootBorder", y.title = "junction")
 
 #select only trochees
@@ -611,7 +590,6 @@ d_gfoot_tro$gfoot <- NULL
 d_gfoot_tro <- droplevels(d_gfoot_tro)
 
 #get frequency table and run contingency tests
-table(d_gfoot_tro)
 cont_test(d_gfoot_tro, x.title = "tro_gfootBorder", y.title = "junction")
 
 #choose only trochees from trochee-only-dataset
@@ -622,7 +600,6 @@ d_gfoot_onlyTro$gfoot_noDac <- NULL
 d_gfoot_onlyTro <- droplevels(d_gfoot_onlyTro)
 
 #get frequency table and run contingency tests
-table(d_gfoot_onlyTro)
 cont_test(d_gfoot_onlyTro, x.title = "Onlytro_gfootBorder", y.title = "junction")
 
 #clean up
@@ -725,7 +702,6 @@ d_h <- data.loadData(whichColumns = c("code", "h_func"), letter = "h", removeUpp
 d_h$h_func <- factor(d_h$h_func, c("PHONO", "GRAPH", "SINI", "DEHN", "ETYM"))
 
 #get frequency table and contingency test
-table(d_h)
 cont_test(d_h, x.title = "hfunc", y.title = "hform")
 
 #clean up
