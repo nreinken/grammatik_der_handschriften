@@ -14,25 +14,23 @@ pval <- function (pvalue, title)
     assign("pvals", dplyr::tibble(id = "", pvalue = 0), envir = globalenv())
   }
   
-  #store p-value
-  pvals.loc <- pvals
-  pvals.loc <- add_row(pvals.loc, tibble_row(id = title, pvalue = pvalue))
+  # store p-value
+  pvals.loc <- pvals %>%
+    add_row(tibble(id = title, pvalue = pvalue)) %>%
+    filter(id != "") %>%
+    distinct(id, .keep_all = TRUE)
+  
+  # apply bonferoni-holm correction
+  pvals.loc$padj <- round(p.adjust(pvals.loc$pvalue, method = "holm"), 5)
   
   
-  #remove duplicates and empty rows
-  pvals.loc <- filter(pvals.loc, id != "") 
-  pvals.loc <- distinct(pvals.loc)
-  
-  #apply bonferoni-holm correction
-  pvals.loc$padj <- round(p.adjust(pvals.loc$pvalue, method = "holm"),5)
-  
-  #print pvals for testing, TODO: remove later
-  #print(pvals.loc)
-  
-  #store pvals in the global environment to use it in the next call of this function
+  # store pvals in the global environment to use it in the next call of this function
   assign("pvals", pvals.loc, envir = globalenv())
+ 
+  #write pvals to csv.file 
+  write.csv(pvals.loc, "results/pvalues.csv", row.names = FALSE)
   
-  #return adjusted p-value
+  # return adjusted p-value
   case <- filter(pvals, id == title)
-  return (case$padj)
+  return(case$padj)
 }
