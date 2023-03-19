@@ -1,7 +1,7 @@
 #graph_contingency.R
 #analysis of graphical letter forms and their correlations with grammatical structures
 #based on scripts by Niklas Reinken, July 2021 – October 2022
-#version 2, January 2023
+#version 3, March 2023
 
 if(!require(tidyverse)){install.packages("tidyverse")}
 if(!require(plyr)){install.packages("plyr")}
@@ -513,7 +513,24 @@ rm(letter)
 rm(newValues)
 rm(test_letters)
 
-#lettershape in syllable positions ====
+#Syllabic structures ====
+#  phonographic syllable boundaries ====
+#load data
+psyll <- data.loadData(whichColumns = c("junc_border", "psyll_border"), removeWaZ = T, removeWordEnds = T, removeUpperCase = F, removeUnrecognisable = F)
+
+#run contingency test
+cont_test(psyll, x.title="phonoSyll", y.title="junction")
+rm(psyll)
+
+#  graphic syllable boundaries ====
+#load data
+gsyll <- data.loadData(whichColumns = c("junc_border", "gsyll_border"), removeWaZ = T, removeWordEnds = T, removeUpperCase = F, removeUnrecognisable = F)
+
+#run contingency test
+cont_test(gsyll, x.title="phonoSyll", y.title="junction")
+rm(gsyll)
+
+#  Lettershape in syllable positions ====
 #  test single letters ====
 #load data
 d_syll <- data.loadData(whichColumns = c("letter_rec", "code", "gsyll_struc"),
@@ -629,7 +646,8 @@ cont_test(eRed_morph, x.title = "e_reducedSyll", y.title ="morphemeCategory")
 #clean up
 rm(eRed_morph)
 
-#Lettershapes at morphological positions ====
+#Morphographic structures ====
+#   Lettershapes at morphological positions ====
 #load data
 d_morph <- data.loadData(whichColumns = c("letter_rec", "code", "morphographic"), removeWaZ =  F, removeWordEnds = F, removeUpperCase = T, removeUnrecognisable = T)
 
@@ -650,7 +668,7 @@ for(letter in letters)
 rm(letter, d_morph_single, d_morph)
 
 
-#Morpheme borders ====
+#   Morpheme borders ====
 #load data
 d_morph_border <- data.loadData(whichColumns = c("junc_border", "morph_border"), 
                          removeWaZ = T, removeWordEnds = T, removeUpperCase = F, removeUnrecognisable = F)
@@ -659,7 +677,7 @@ d_morph_border <- data.loadData(whichColumns = c("junc_border", "morph_border"),
 cont_test(d_morph_border, x.title = "morphemeBorder", y.title = "junction")
 rm(d_morph_border)
 
-#Morpheme processes ====
+#   Morpheme processes ====
 #load data
 d_morph_type <- data.loadData(whichColumns = c("junc_border", "morph_border_type"), 
                                 removeWaZ = T, removeWordEnds = T, removeUpperCase = F, removeUnrecognisable = F)
