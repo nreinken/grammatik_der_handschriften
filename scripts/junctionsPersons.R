@@ -3,57 +3,55 @@
 #based on scripts by Niklas Reinken, July 2021
 #version 2, January 2023
 
-if(!require(tidyverse)){install.packages("tidyverse")}
-if(!require(plyr)){install.packages("plyr")}
-library(tidyverse)
+#load required packages
+if (!requireNamespace("tidyverse", quietly = TRUE)) {
+  install.packages("tidyverse")
+}
 
+#load required functions
 source("scripts/dataHandling.R")
 
+#disable scientific notation
 options(scipen = 0)
 
 #load data
-d <- data.loadData(whichColumns = c("person_ID", "junc_border"), 
+data <- data.loadData(whichColumns = c("person_ID", "junc_border"), 
                    removeWaZ = T, removeWordEnds = T, removeUpperCase = F, removeUnrecognisable = F)
 
-d$person_ID <- as.factor(d$person_ID)
+#convert person_ID to factor
+data$person_ID <- as.factor(data$person_ID)
 
-prop.table(table(d$junc_border))
+#get percentages
+prop.table(table(data$junc_border))
 
-#group data by persons
-d_groups <-  group_by(d, person_ID) %>%
-  group_split()
+#calculate junction frequencies for each person
+junction_freqs <- data %>%
+  group_by(person_ID) %>%
+  summarize(connected = round(prop.table(table(junc_border))[1], 3), 
+            not_connected = round(prop.table(table(junc_border))[2], 3))
 
-#calculate junction rates for each person and save them in data frame
-junc_rates <- data.frame()
-for(person in d_groups)
-{
-  person <- droplevels(person)
-  junc_rates <- rbind(junc_rates, c(levels(person$person_ID), 
-                                    round(prop.table(table(person$junc_border)),3)))
-}
-colnames(junc_rates) <- c("ID", "connected", "not connected")
-junc_rates <- junc_rates[order(junc_rates$connected),]
+#Write junction frequencies to CSV
+write_csv2(junction_freqs, "results/junctionRates_person.csv")
 
-#write data frame to .csv
-write_csv2(junc_rates, "results/junctionRates_person.csv")
-
-#group handwritings to cursive, block, or mixed
+#add handwriting style (cursive, mixed, block)
 breaks <- c(0,0.2,0.8,1)
 tags <- c("block","mixed", "cursive")
-group_tags <- cut(as.numeric(junc_rates$connected), 
-                  breaks=breaks, 
-                  include.lowest=TRUE, 
-                  right=FALSE, 
-                  labels=tags)
-junc_rates$group <- group_tags
-# inspect bins
-summary(group_tags)
+junction_freqs$handwriting <- cut(junction_freqs$connected, 
+                                  breaks=breaks, 
+                                  include.lowest=TRUE, 
+                                  right=FALSE, 
+                                  labels=tags)
 
-#plot density
-ggplot(data = junc_rates, aes(x = as.numeric(connected))) +
+#Print summary of handwriting groups
+summary(junction_freqs$handwriting)
+
+#plot density of junction rates
+ggplot(data = junction_freqs, aes(x = connected)) +
   geom_histogram(binwidth = 0.05, alpha = 0.5, fill = "#222222") +
   geom_density(color = "black") +
-  labs(x = "junction rate", y = "number of texts") +
+  labs(x = "Junction rate", y = "Number of texts") +
   theme_minimal()
-ggsave("graphs/density_junctionRates.eps", width = 5, height = 3, device=cairo_ps)
+
+# Save plot to file
 ggsave("graphs/density_junctionRates.png", width = 5, height = 3)
+ggsave("graphs/density_junctionRates.eps", width = 5, height = 3, device=cairo_ps)
