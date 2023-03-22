@@ -5,9 +5,11 @@
 
 
 #load libraries
-if(!require(tidyverse)){install.packages("tidyverse")}
-if(!require(plyr)){install.packages("plyr")}
+if (!requireNamespace("tidyverse", quietly = TRUE)) {
+  install.packages("tidyverse")
+}
 library(tidyverse)
+
 
 source("scripts/dataHandling.R")
 
@@ -17,33 +19,24 @@ options(scipen = 999)
 d <- data.loadData(whichColumns = c("person_ID","letter_rec","code"), removeWaZ = F, removeWordEnds = F, removeUpperCase = T, removeUnrecognisable = T)
 
 
-#group data for each letter shape
-shapePersons <- group_by(d, code)
-#count the amount of persons each letter is used by
-shapePersons <- dplyr::summarize(shapePersons, nPersons = n_distinct(person_ID))
-#save to .csv
-write_csv2(shapePersons, "results/numberPersonsEachShape.csv")
-#clean up 
-rm(shapePersons)
+#calculate the number of persons each letter is used by
+shapePersons <- d %>%
+  group_by(code) %>%
+  summarize(nPersons = n_distinct(person_ID)) %>%
+  write_csv2("results/numberPersonsEachShape.csv")
 
-#group by person and letter
-d <- group_by(d, person_ID, letter_rec)
-#count the amount of letter shapes for each person
-d <- dplyr::summarize(d, nShapes = n_distinct(code))
-#write to .csv
-write_csv2(d, "results/numberShapesEachPerson.csv")
+#calculate the number of letter shapes for each person
+numberShapesEachPerson <- d %>%
+  group_by(person_ID, letter_rec) %>%
+  summarize(nShapes = n_distinct(code)) %>%
+  write_csv2("results/numberShapesEachPerson.csv")
 
-#group by person
-persons <- group_by(d, person_ID)
-#calculate median amount of letter shapes for each person
-persons <- dplyr::summarize(persons, x = mean(nShapes))
-median(persons$x)
+#calculate the median amount of letter shapes for each person
+medianShapesEachPerson <- numberShapesEachPerson %>%
+  group_by(person_ID) %>%
+  summarize(medianShapes = median(nShapes))
 
-#group by letter
-letters <- group_by(d, letter_rec)
-#calculate median amount of letter shapes for each letter
-letters <- dplyr::summarize(letters, x = mean(nShapes))
-median(letters$x)
-
-#clean up
-rm(d, letters, persons)
+#calculate the median amount of letter shapes for each letter
+medianShapesEachLetter <- numberShapesEachPerson %>%
+  group_by(letter_rec) %>%
+  summarize(medianShapes = median(nShapes))
