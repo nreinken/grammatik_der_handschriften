@@ -95,7 +95,7 @@ plot_coefs <- function(coefs,
                        png = T)
 {
   p <-
-    ggplot(data = coefs, aes(x = reorder(rownames.coefs., coefs), y = coefs)) +
+    ggplot(data = coefs, aes(x = reorder(names, coefs), y = coefs)) +
     geom_point(
       stat = "identity",
       size = 5,
@@ -105,14 +105,14 @@ plot_coefs <- function(coefs,
     ) +
     geom_segment(aes(
       y = 0,
-      x = rownames.coefs.,
+      x = names,
       yend = coefs,
-      xend = rownames.coefs.
+      xend = names
     ),
     color = "#222222") +
-    geom_text(aes(y = pos, label = str_c(rownames.coefs., ": ", coefs)) , color = "#222222", size = 3) +
+    geom_text(aes(y = pos, label = str_c(names, ": ", coefs)) , color = "#222222", size = 3) +
     geom_segment(aes(
-      x = length(rownames.coefs.) + 1,
+      x = length(names) + 1,
       y = 0,
       yend = 0,
       xend = 0

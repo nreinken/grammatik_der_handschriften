@@ -4,6 +4,7 @@
 #version 1, January 2023
 
 
+if(!require(MASS)){install.packages("MASS")}
 if(!require(plyr)){install.packages("plyr")}
 if(!require(tidyverse)){install.packages("tidyverse")}
 if(!require(descr)){install.packages("descr")}
@@ -49,7 +50,7 @@ if(!is_empty(outliers))
 rm(outliers)
 
 #check assumptions
-checkAssumptions(best.model, d_syn) #!!!CAUTION, this takes some time!!!
+checkAssumptions(best.model, d_syn, generate_plot = F) #!!!CAUTION, plotting takes some time!!!
 
 #write coefficients to file
 write.csv(coef(best.model), "results/coefs_syntagmatic.csv")
@@ -96,15 +97,13 @@ predictRates <- data.frame()
 letters <- sort(unique(d_par$letter))
 for(char in letters)
 {
-  print(char)
   rate <- paraModel(char, data = d_par)
   #add prediction rate to data frame
   predictRates <- rbind(predictRates, rate)
 }
 
-#show the results and store them to .csv
+#store the results to .csv
 colnames(predictRates) <- c("letter", "predictRate")
-print(predictRates)
 write.csv(predictRates, "results/predictionRates_paradigmatic.csv")
 
 #clean up
@@ -152,10 +151,10 @@ coefs <- getCoefs(best.model, varName = "next_letter", fileName = "letters")
 
 #prepare coefficients for plotting
 coefs_ext <- arrange(coefs, desc(coefs))
-coefs_ext <- mutate(coefs_ext, color = ifelse(str_detect(rownames.coefs.,"prev_letter"), "previousLetter", "followingLetter"))
-coefs_ext$rownames.coefs. <- str_remove_all(coefs_ext$rownames.coefs.,"prev_letter")
-coefs_ext$rownames.coefs. <- str_remove_all(coefs_ext$rownames.coefs.,"next_letter")
-coefs_ext <- mutate(coefs_ext, name = rownames.coefs.)
+coefs_ext <- mutate(coefs_ext, color = ifelse(str_detect(names,"prev_letter"), "previousLetter", "followingLetter"))
+coefs_ext$names <- str_remove_all(coefs_ext$names,"prev_letter")
+coefs_ext$names <- str_remove_all(coefs_ext$names,"next_letter")
+coefs_ext <- mutate(coefs_ext, name = names)
 coefs_ext <- mutate(coefs_ext, pos = ifelse(coefs > 0, coefs + 0.7, coefs - 0.7))
 coefs_ext <- arrange(coefs_ext, desc(coefs))
 
@@ -180,7 +179,7 @@ model.int <- glm(junc_border ~ next_letter * prev_letter,
 anova(best.model, model.int, test = "Chisq") #it's not better
 
 #clean up
-rm(best.model, coefs, coefs_ext, d_letters, d_letters.test, d_letters.train, full.model, model.int, split.set, formula, toselect)
+rm(best.model, d_letters, d_letters.test, d_letters.train, full.model, model.int, split.set, formula)
 
 #Junctions and letterforms ====
 #load data
@@ -218,15 +217,15 @@ coefs <- getCoefs(best.model, varName = "code", fileName = "letterforms")
 
 #prepare coefs for plotting
 coefs_ext <- arrange(coefs, desc(coefs))
-coefs_ext$rownames.coefs. <- str_remove_all(coefs_ext$rownames.coefs.,"code")
-coefs_ext <- mutate(coefs_ext, name = rownames.coefs.)
+coefs_ext$names <- str_remove_all(coefs_ext$names,"code")
+coefs_ext <- mutate(coefs_ext, name = names)
 coefs_ext <- mutate(coefs_ext, pos = ifelse(coefs > 0, coefs + 1.5, coefs - 1.5))
 coefs_ext <- arrange(coefs_ext, coefs)
-coefs_ext$rownames.coefs. <- NULL
+coefs_ext$names <- NULL
 max_coefs <- head(arrange(coefs_ext, desc(coefs)),15)
 min_coefs <- tail(arrange(coefs_ext, desc(coefs)),15)
 coefs_ext <- rbind(max_coefs, min_coefs)
-names(coefs_ext)[2] <- "rownames.coefs."
+names(coefs_ext)[2] <- "names"
 
 #clean up
 rm(max_coefs, min_coefs)
