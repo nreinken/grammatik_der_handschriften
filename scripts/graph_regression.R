@@ -3,8 +3,6 @@
 #based on scripts by Niklas Reinken, July 2021
 #version 1, January 2023
 
-
-
 #load required packages
 if (!requireNamespace("MASS", quietly = TRUE)) {
   install.packages("MASS")
@@ -31,7 +29,7 @@ source("scripts/graphics.R")
 
 #Syntagmatic variation ====
 #load data
-d_syn <-
+syntagmatic_data <-
   data.loadData(
     whichColumns = c("person_ID", "word_index", "junc_border", "letter_freq"),
     removeWaZ = T,
@@ -41,51 +39,51 @@ d_syn <-
   )
 
 #factorize person ID
-d_syn$person_ID <- factor(d_syn$person_ID)
+syntagmatic_data$person_ID <- factor(syntagmatic_data$person_ID)
 
 #set up test and training samples
-d_syn.split <- split_set(d_syn)
-d_syn.train <- d_syn.split$train.data
-d_syn.test <- d_syn.split$test.data
-rm(d_syn.split)
+syntagmatic_data.split <- split_set(syntagmatic_data)
+syntagmatic_data.train <- syntagmatic_data.split$train.data
+syntagmatic_data.test <- syntagmatic_data.split$test.data
+rm(syntagmatic_data.split)
 
 #set up the model
-formula <-
+formula_syntagmatic <-
   as.formula(junc_border ~ person_ID + log(word_index) + log(letter_freq))
-full.model <-
-  glm(formula = formula,
-      data = d_syn.train,
+full_model_syntagmatic <-
+  glm(formula = formula_syntagmatic,
+      data = syntagmatic_data.train,
       family = binomial)
 
 #get the best model (stepwise selection)
-best.model <- full.model %>% MASS::stepAIC(direction = "both")
+best_model_syntagmatic <- full_model_syntagmatic %>% MASS::stepAIC(direction = "both")
 
 #check for outliers
-outliers <- checkOutliers(best.model)
+outliers <- checkOutliers(best_model_syntagmatic)
 
 #remove outliers and set up a new model
 if (!is_empty(outliers))
 {
   print("Outliers detected; omitting overly influential cases and setting up new model")
-  d_syn.train <- d_syn.train[-outliers,]
-  full.model <-
-    glm(formula = formula,
-        data = d_syn.train,
+  syntagmatic_data.train <- syntagmatic_data.train[-outliers,]
+  full_model_syntagmatic <-
+    glm(formula = formula_syntagmatic,
+        data = syntagmatic_data.train,
         family = binomial)
-  best.model <- full.model %>% MASS::stepAIC(direction = "both")
+  best_model_syntagmatic <- full_model_syntagmatic %>% MASS::stepAIC(direction = "both")
 }
 rm(outliers)
 
 #check assumptions
-checkAssumptions(best.model, d_syn, generate_plot = F) #!!!CAUTION, plotting takes some time!!!
+checkAssumptions(best_model_syntagmatic, syntagmatic_data, generate_plot = F) #!!!CAUTION, plotting takes some time!!!
 
 #write coefficients to file
-write.csv(coef(best.model), "results/coefs_syntagmatic.csv")
+write.csv(coef(best_model_syntagmatic), "results/coefs_syntagmatic.csv")
 
 #evaluate model
-summary(best.model)
-crossvalidate(best.model, d_syn.test)
-descr::LogRegR2(best.model)
+summary(best_model_syntagmatic)
+crossvalidate(best_model_syntagmatic, syntagmatic_data.test)
+descr::LogRegR2(best_model_syntagmatic)
 
 #check interactions
 
@@ -93,18 +91,18 @@ descr::LogRegR2(best.model)
 model.int1 <-
   glm(
     junc_border ~ person_ID * log(word_index) + log(letter_freq),
-    data = d_syn.train,
+    data = syntagmatic_data.train,
     family = binomial
   )
 model.int2 <-
   glm(
     junc_border ~ person_ID * log(letter_freq) + log(word_index),
-    data = d_syn.train,
+    data = syntagmatic_data.train,
     family = binomial
   )
 
 #are the models with interactions better than the model without?
-anova(best.model, model.int1, model.int2, test = "Chisq")
+anova(best_model_syntagmatic, model.int1, model.int2, test = "Chisq")
 
 #model.int1 is slightly better than the default model
 summary(model.int1)
@@ -112,10 +110,10 @@ LogRegR2(model.int1)
 
 #clean up
 rm(
-  best.model,
-  d_syn,
-  d_syn.test,
-  d_syn.train,
+  best_model_syntagmatic,
+  syntagmatic_data,
+  syntagmatic_data.test,
+  syntagmatic_data.train,
   full.model,
   model.int1,
   model.int2,
@@ -125,7 +123,7 @@ rm(
 #Paradigmatic variation ====
 
 #load data
-d_par <-
+paradigmatic_data <-
   data.loadData(
     whichColumns = c("code", "letter", "person_ID", "word_index", "letter_freq"),
     removeWaZ = F,
@@ -135,31 +133,31 @@ d_par <-
   )
 
 #factorize person ID
-d_par$person_ID <- factor(d_par$person_ID)
+paradigmatic_data$person_ID <- factor(paradigmatic_data$person_ID)
 
 #recode umlauts as base letters
-d_par$letter <-
-  plyr::revalue(d_par$letter, c("ä" = "a", "ö" = "o", "ü" = "u"))
-d_par <- droplevels(d_par)
+paradigmatic_data$letter <-
+  plyr::revalue(paradigmatic_data$letter, c("ä" = "a", "ö" = "o", "ü" = "u"))
+paradigmatic_data <- droplevels(paradigmatic_data)
 
 #set up a dataframe for result collection
 predictRates <- data.frame()
 
 #set up paradigmatic variation models for each letter in list
-letters <- sort(unique(d_par$letter))
-for (char in letters)
-{
-  rate <- paraModel(char, data = d_par)
-  #add prediction rate to data frame
-  predictRates <- rbind(predictRates, rate)
-}
+letters <- sort(unique(paradigmatic_data$letter))
+
+#apply paraModel() to each letter in the list using lapply()
+predictRates <- data.frame(
+  letter = letters,
+  predictRate = unlist(lapply(as.character(letters), function(char) paraModel(char, data = paradigmatic_data)))
+)
 
 #store the results to .csv
 colnames(predictRates) <- c("letter", "predictRate")
 write.csv(predictRates, "results/predictionRates_paradigmatic.csv")
 
 #clean up
-rm(d_par, predictRates, char, letters, rate)
+rm(paradigmatic_data, predictRates, char, letters, rate)
 
 #Junctions and letters ====
 #load data
