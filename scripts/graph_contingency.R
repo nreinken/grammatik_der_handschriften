@@ -37,9 +37,6 @@ d_e$e_func <- factor(d_e$e_func, c("FULL", "DIPHTHONG", "LENGTH", "RED"))
 # get frequency table and contingency test
 cont_test(d_e, x_title = "efunc", y_title = "eform")
 
-# clean up
-rm(d_e)
-
 # Distinctivity at syllable positions ====
 
 # load data
@@ -60,8 +57,6 @@ for (letter in test_letters) {
     # get table and contingency tests
     cont_test(d_dist_temp, x_title = paste0("gsyll_", letter), y_title = "form")
 }
-# clean up
-rm(letter, test_letters, d_dist_temp)
 
 
 # test multiple letters and compare them ====
@@ -101,9 +96,6 @@ for (pair in letter_pairs) {
         cont_test(d_dist_temp2, x_title = paste0("gsyll_", form), y_title = "form")
     }
 }
-# clean up
-rm(d_dist, d_dist_temp, d_dist_temp2, letter_pairs, form, letter, letter_recs,
-    pair)
 
 
 
@@ -148,14 +140,7 @@ for (level in levels(d_dbl$double_cons)) {
     print(level)
     print("gleiche Formen:")
     print(table(same_form))
-
-    # clean up
-    rm(case, case_next, d_dbl_forms, same_form, double_consonant, index)
 }
-
-# clean up
-rm(double_consonant, level, d_dbl, d_dbl_diffs)
-
 
 # lettershapes in diphthongs ==== load data
 d_diph <- data.loadData(whichColumns = c("code", "letter_rec", "phon_class",
@@ -180,8 +165,6 @@ for (letter in secondParts) {
     cont_test(d_diph_single, x_title = "diphthong", y_title = paste0(letter,
         "_form"))
 }
-# clean up
-rm(letter, secondParts, d_diph, d_diph_single)
 
 # lettershapes in key position ==== load data
 d_key <- data.loadData(whichColumns = c("letter_rec", "code", "gsyll_struc"),
@@ -203,8 +186,6 @@ for (letter in letters) {
     cont_test(d_key_single, x_title = "key", y_title = paste0(letter, "_form"))
 }
 
-# clean up
-rm(d_key, d_key_single, letter)
 
 # Phonographic structures ==== lettershape and vowel tension ==== load
 # data
@@ -228,8 +209,6 @@ for (letter in vowels) {
     cont_test(d_singleVowel, x_title = "tension", y_title = paste0("form_",
         letter))
 }
-# clean up
-rm(d_singleVowel, d_vowels, letter, vowels)
 
 # lettershape and consonant voicedness ====
 consonants <- c("b", "d", "g", "s", "v")
@@ -253,8 +232,7 @@ for (letter in consonants) {
     cont_test(d_singleCons, x_title = "voicedness", y_title = paste0("form_",
         letter))
 }
-# clean up
-rm(d_singleCons, letter, consonants, d_cons)
+
 # Case study: Lettershapes and voicedness for each text ==== load data
 d_text <- data.loadData(whichColumns = c("person_ID", "letter_rec", "code",
     "phon_cvoiced"), letter = c("b", "d", "g", "s"), removeWaZ = F, removeWordEnds = F,
@@ -288,8 +266,6 @@ for (text in d_text) {
         }
     }
 }
-# clean up
-rm(d_subset, d_text, text, letter, voiced_letters)
 
 # <h> shape and junctions #### load data
 d_h <- data.loadData(whichColumns = c("code", "junc_border_before", "junc_border"),
@@ -311,8 +287,6 @@ cont_test(data = d_h, x_title = "junction", y_title = "h_shape")
 
 cont_test(data = d_h_before, x_title = "junction_before", y_title = "h_shape")
 
-# clean up
-rm(d_h, d_h_before)
 
 # Complex graphemes ====
 
@@ -363,8 +337,6 @@ d_complex_binary <- droplevels(d_complex_binary)
 # get frequency table and run contingency test
 cont_test(data = d_complex_binary, x_title = "complex", y_title = "junction")
 
-# clean up
-rm(d_complex_binary)
 
 # Contrast <th> and pseudo-<th> ====
 d_complex_th <- filter(d_complex_pseudo, graph_complexity %in% c("th", "pseudo-th"))
@@ -372,10 +344,6 @@ d_complex_th <- droplevels(d_complex_th)
 
 # get frequency table and run contingency test
 cont_test(d_complex_th, x_title = "complex_th", y_title = "junction")
-
-# clean up
-rm(d_complex_th)
-rm(d_complex_pseudo)
 
 # Compare complex graphemes individually ==== <rh> is too rare, so it's
 # omitted
@@ -392,9 +360,6 @@ d_complex_single <- droplevels(d_complex_single)
 # get frequency table and run contingency test
 cont_test(data = d_complex_single, x_title = "complex_onlyComplex", y_title = "junction")
 
-# clean up
-rm(d_complex_single)
-
 # Analyse <sch> ==== select <sch> cases
 d_complex_sch <- filter(d_complex_withLetter, graph_complexity %in% c("sch",
     "FALSE"))
@@ -405,9 +370,6 @@ d_complex_sch <- droplevels(d_complex_sch)
 
 # get frequency table and run contingency test
 cont_test(d_complex_sch, x_title = "complex_sch", y_title = "junction")
-
-# clean up
-rm(d_complex_sch)
 
 # separation between s and ch
 d_complex_sc <- filter(d_complex_withLetter, letter_rec %in% c("s", "c"))
@@ -420,9 +382,6 @@ d_complex_sc <- droplevels(d_complex_sc)
 # get frequency table and run contingency test
 cont_test(d_complex_sc, x_title = "complex_sc", y_title = "junction")
 
-# clean up
-rm(d_complex_sc)
-
 # Case study: compare <ng> and <el> as potentially complex graphemes
 # ==== select <ng> cases
 d_complex_ng <- filter(d_complex, graph_complexity %in% c("ng", "FALSE"))
@@ -433,9 +392,6 @@ d_complex_ng$graph_complexity <- factor(d_complex_ng$graph_complexity)
 # get frequency table and run contingency test
 cont_test(d_complex_ng, x_title = "complex_ng", y_title = "junction")
 
-# clean up
-rm(d_complex_ng)
-
 # select <el> cases
 d_complex_el <- filter(d_complex, graph_complexity %in% c("el", "FALSE"))
 d_complex_el$graph_complexity <- ifelse(d_complex_el$graph_complexity == "FALSE",
@@ -445,9 +401,6 @@ d_complex_el$graph_complexity <- factor(d_complex_el$graph_complexity)
 
 # get frequency table and run contingency test
 cont_test(d_complex_el, x_title = "complex_el", y_title = "junction")
-
-# clean up
-rm(d_complex_el)
 
 # Are there special letter forms in complex graphemes? ==== remove all
 # letters not occuring in complex graphemes or not regognizable
@@ -473,15 +426,7 @@ for (letter in test_letters) {
 
     cont_test(d_complex_letter, x_title = paste0(letter, "-form"), y_title = "complex")
 }
-
-# and that's the analysis of complexe graphemes clean up
-rm(d_complex)
-rm(d_complex_letter)
-rm(d_complex_letterForms)
-rm(d_complex_withLetter)
-rm(letter)
-rm(newValues)
-rm(test_letters)
+# and that's the analysis of complexe graphemes
 
 # Syllabic structures ==== phonographic syllable boundaries ==== load
 # data
@@ -490,7 +435,6 @@ psyll <- data.loadData(whichColumns = c("junc_border", "psyll_border"), removeWa
 
 # run contingency test
 cont_test(psyll, x_title = "phonoSyll", y_title = "junction")
-rm(psyll)
 
 # graphic syllable boundaries ==== load data
 gsyll <- data.loadData(whichColumns = c("junc_border", "gsyll_border"), removeWaZ = T,
@@ -498,7 +442,6 @@ gsyll <- data.loadData(whichColumns = c("junc_border", "gsyll_border"), removeWa
 
 # run contingency test
 cont_test(gsyll, x_title = "phonoSyll", y_title = "junction")
-rm(gsyll)
 
 # Lettershape in syllable positions ==== test single letters ==== load
 # data
@@ -518,8 +461,6 @@ for (letter in letters) {
     cont_test(d_subs, x_title = "syllablePosition", y_title = paste0(letter,
         "-shape"))
 }
-# clean up
-rm(d_subs, d_syll)
 # test reduced letters against other shapes ===== define reduced forms
 reduced_forms <- c("a5", "e3", "f6", "f7", "f8", "f9", "g5", "g6", "h5", "g6",
     "k8", "o3", "r4", "r5", "s5", "t5")
@@ -547,7 +488,6 @@ for (letter in reduced_letters) {
     cont_test(d_reds, x_title = "syllablePosition", y_title = paste0("reduced_",
         letter))
 }
-rm(forms, letter, reduced_forms, reduced_letters, d_reds)
 
 # Graphematic feet ==== Check if <e> form depends on syllable type ====
 d_esyll <- data.loadData(whichColumns = c("code", "gsyll_type"), letter = "e",
@@ -555,9 +495,6 @@ d_esyll <- data.loadData(whichColumns = c("code", "gsyll_type"), letter = "e",
 
 # get frequency table and run contingency tests
 cont_test(d_esyll, x_title = "eForm", y_title = "syllableType")
-
-# clean up
-rm(d_esyll)
 
 # check if the letters at foot borders are more often separated ====
 # load data
@@ -591,9 +528,6 @@ d_gfoot_onlyTro <- droplevels(d_gfoot_onlyTro)
 # get frequency table and run contingency tests
 cont_test(d_gfoot_onlyTro, x_title = "Onlytro_gfootBorder", y_title = "junction")
 
-# clean up
-rm(d_gfoot, d_gfoot_dac, d_gfoot_tro, d_gfoot_onlyTro)
-
 # Reduced <e> at morphological positions load data
 eRed_morph <- data.loadData(whichColumns = c("gsyll_type", "code", "morph_cat"),
     letter = "e", removeWaZ = F, removeWordEnds = F, removeUpperCase = T,
@@ -611,9 +545,6 @@ eRed_morph$morph_cat <- plyr::revalue(eRed_morph$morph_cat, c(LEX = "pseudo affi
 
 # run contingency test
 cont_test(eRed_morph, x_title = "e_reducedSyll", y_title = "morphemeCategory")
-
-# clean up
-rm(eRed_morph)
 
 # Morphographic structures ==== Lettershapes at morphological positions
 # ==== load data
@@ -633,17 +564,12 @@ for (letter in letters) {
         "_form"))
 }
 
-# clean up
-rm(letter, d_morph_single, d_morph)
-
-
 # Morpheme borders ==== load data
 d_morph_border <- data.loadData(whichColumns = c("junc_border", "morph_border"),
     removeWaZ = T, removeWordEnds = T, removeUpperCase = F, removeUnrecognisable = F)
 
 # run contingency tests
 cont_test(d_morph_border, x_title = "morphemeBorder", y_title = "junction")
-rm(d_morph_border)
 
 # Morpheme processes ==== load data
 d_morph_type <- data.loadData(whichColumns = c("junc_border", "morph_border_type"),
@@ -660,14 +586,12 @@ d_morph_type$morph_border_type <- plyr::revalue(d_morph_type$morph_border_type,
     newValues)
 d_morph_type$morph_border_type <- factor(d_morph_type$morph_border_type, levels = c("none",
     "inflection", "pref.", "suff.", "comp.", "circumf."))
-rm(newValues)
 
 # remove circumfixation, cause it's too rare
 d_morph_type <- droplevels(filter(d_morph_type, !morph_border_type == "circumf."))
 
 # run contingency test
 cont_test(d_morph_type, x_title = "morphemeProcess", y_title = "junction")
-rm(d_morph_type)
 
 # Form and function of <h> ==== load data
 d_h <- data.loadData(whichColumns = c("code", "h_func"), letter = "h", removeUpperCase = T,
@@ -678,6 +602,3 @@ d_h$h_func <- factor(d_h$h_func, c("PHONO", "GRAPH", "SINI", "DEHN", "ETYM"))
 
 # get frequency table and contingency test
 cont_test(d_h, x_title = "hfunc", y_title = "hform")
-
-# clean up
-rm(d_h)

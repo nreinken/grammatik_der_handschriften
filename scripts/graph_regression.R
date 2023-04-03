@@ -25,9 +25,8 @@ source("scripts/dataHandling.R")
 source("scripts/regressions.R")
 source("scripts/graphics.R")
 
-
-
-# Syntagmatic variation ==== load data
+# Syntagmatic variation ==== 
+#load data
 syntagmatic_data <- data.loadData(whichColumns = c("person_ID", "word_index",
     "junc_border", "letter_freq"), removeWaZ = T, removeWordEnds = T, removeUpperCase = F,
     removeUnrecognisable = T)
@@ -39,15 +38,16 @@ syntagmatic_data$person_ID <- factor(syntagmatic_data$person_ID)
 syntagmatic_data.split <- split_set(syntagmatic_data)
 syntagmatic_data.train <- syntagmatic_data.split$train.data
 syntagmatic_data.test <- syntagmatic_data.split$test.data
-rm(syntagmatic_data.split)
 
-# set up the model
+# set up the formula
 formula_syntagmatic <- as.formula(junc_border ~ person_ID + log(word_index) +
     log(letter_freq))
+
+#set up the model
 full_model_syntagmatic <- glm(formula = formula_syntagmatic, data = syntagmatic_data.train,
     family = binomial)
 
-# get the best model (stepwise selection)
+# select the best model using stepwise selection
 best_model_syntagmatic <- full_model_syntagmatic %>%
     MASS::stepAIC(direction = "both")
 
@@ -55,15 +55,14 @@ best_model_syntagmatic <- full_model_syntagmatic %>%
 outliers <- checkOutliers(best_model_syntagmatic)
 
 # remove outliers and set up a new model
-if (!is_empty(outliers)) {
-    print("Outliers detected; omitting overly influential cases and setting up new model")
+if (length(outliers) > 0) {
+    cat("Outliers detected; omitting overly influential cases and setting up new model")
     syntagmatic_data.train <- syntagmatic_data.train[-outliers, ]
     full_model_syntagmatic <- glm(formula = formula_syntagmatic, data = syntagmatic_data.train,
         family = binomial)
     best_model_syntagmatic <- full_model_syntagmatic %>%
         MASS::stepAIC(direction = "both")
 }
-rm(outliers)
 
 # check assumptions
 checkAssumptions(best_model_syntagmatic, syntagmatic_data, generate_plot = F)  # !!!CAUTION, plotting takes some time!!!
@@ -92,7 +91,6 @@ summary(model.int1)
 LogRegR2(model.int1)
 
 # Paradigmatic variation ====
-
 # load data
 paradigmatic_data <- data.loadData(whichColumns = c("code", "letter", "person_ID",
     "word_index", "letter_freq"), removeWaZ = F, removeWordEnds = F, removeUpperCase = T,
@@ -122,9 +120,6 @@ predictRates <- data.frame(letter = letters, predictRate = unlist(lapply(as.char
 colnames(predictRates) <- c("letter", "predictRate")
 write.csv(predictRates, "results/predictionRates_paradigmatic.csv")
 
-# clean up
-rm(paradigmatic_data, predictRates, char, letters, rate)
-
 # Junctions and letters ==== load data
 d_letters <- data.loadData(whichColumns = c("junc_border", "next_letter",
     "prev_letter"), removeWaZ = T, removeWordEnds = T, removeUpperCase = T,
@@ -140,7 +135,6 @@ d_letters <- droplevels(filter(d_letters, !prev_letter %in% c("A", "B", "C",
 d_letters.split <- split_set(d_letters)
 d_letters.train <- d_letters.split$train.data
 d_letters.test <- d_letters.split$test.data
-rm(d_letters.split)
 
 # set up model
 formula <- formula(junc_border ~ next_letter + prev_letter)
@@ -159,7 +153,6 @@ if (!is_empty(outliers)) {
     best.model <- full.model %>%
         MASS::stepAIC(direction = "both")
 }
-rm(outliers)
 
 # there are no numeric variables in the model, so no assumptions can be
 # checked
@@ -185,8 +178,6 @@ split.set <- split(coefs_ext, coefs_ext$color)
 plot_coefs(split.set$followingLetter, name = "followingLetter")
 plot_coefs(split.set$previousLetter, name = "previousLetter")
 
-rm(coefs, coefs_ext)
-
 summary(best.model)
 crossvalidate(best.model, d_letters.test)
 descr::LogRegR2(best.model)
@@ -198,11 +189,8 @@ model.int <- glm(junc_border ~ next_letter * prev_letter, data = d_letters.train
 # is the model with interactions better than the model without?
 anova(best.model, model.int, test = "Chisq")  # it's not better
 
-# clean up
-rm(best.model, d_letters, d_letters.test, d_letters.train, full.model, model.int,
-    split.set, formula)
-
-# Junctions and letterforms ==== load data
+# Junctions and letterforms ==== 
+#load data
 d_forms <- data.loadData(whichColumns = c("code", "junc_border"), removeWaZ = T,
     removeWordEnds = T, removeUpperCase = T, removeUnrecognisable = T)
 
@@ -210,7 +198,6 @@ d_forms <- data.loadData(whichColumns = c("code", "junc_border"), removeWaZ = T,
 d_forms.split <- split_set(d_forms)
 d_forms.train <- d_forms.split$train.data
 d_forms.test <- d_forms.split$test.data
-rm(d_forms.split)
 
 # set up model
 formula <- formula(junc_border ~ code)
@@ -229,7 +216,6 @@ if (!is_empty(outliers)) {
     best.model <- full.model %>%
         MASS::stepAIC(direction = "both")
 }
-rm(outliers)
 
 # there are no numeric variables in the model, so no assumptions can be
 # checked
@@ -250,9 +236,6 @@ min_coefs <- tail(arrange(coefs_ext, desc(coefs)), 15)
 coefs_ext <- rbind(max_coefs, min_coefs)
 names(coefs_ext)[2] <- "names"
 
-# clean up
-rm(max_coefs, min_coefs)
-
 # plot
 plot_coefs(coefs_ext, name = "letterforms")
 
@@ -261,9 +244,6 @@ summary(best.model)
 crossvalidate(best.model, d_forms.test)
 descr::LogRegR2(best.model)
 
-# clean up
-rm(best.model, coefs, coefs_ext, d_forms, d_forms.test, d_forms.train, full.model,
-    formula)
 
 # Junctions and bigrams ==== load data
 d_bigr <- data.loadData(whichColumns = c("junc_border", "bigramm_next"), removeWaZ = T,
@@ -273,13 +253,11 @@ d_bigr <- data.loadData(whichColumns = c("junc_border", "bigramm_next"), removeW
 freqs <- data.frame(table(d_bigr$bigramm_next))
 low_freqs <- filter(freqs, Freq < 100)
 d_bigr <- droplevels(filter(d_bigr, !bigramm_next %in% low_freqs$Var1))
-rm(freqs, low_freqs)
 
 # set up test and training samples
 d_bigr.split <- split_set(d_bigr)
 d_bigr.train <- d_bigr.split$train.data
 d_bigr.test <- d_bigr.split$test.data
-rm(d_bigr.split)
 
 # set up model
 formula <- formula(junc_border ~ bigramm_next)
@@ -298,7 +276,6 @@ if (!is_empty(outliers)) {
     best.model <- full.model %>%
         MASS::stepAIC(direction = "both")
 }
-rm(outliers)
 
 # there are no numeric variables in the model, so no assumptions can be
 # checked
@@ -319,7 +296,3 @@ plot_coefs(coefs_ext, name = "bigrams")
 summary(best.model)
 crossvalidate(best.model, d_bigr.test)
 descr::LogRegR2(best.model)
-
-# clean up
-rm(coefs_ext, d_bigr, d_bigr.test, d_bigr.train, full.model, max_coefs, min_coefs,
-    best.model, coefs, formula)
